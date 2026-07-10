@@ -1,7 +1,7 @@
 {
     "schema_version": "1.0.0",
     "feature_version": "1.0.0",
-    "training_timestamp": "2026-07-10T00:46:21.304654+00:00",
+    "training_timestamp": "2026-07-10T22:34:43.633243+00:00",
     "dataset_size": 600,
     "split_ratios": {
         "train": 0.6,
@@ -20,17 +20,18 @@
         "dual": false,
         "fit_intercept": true,
         "intercept_scaling": 1,
-        "l1_ratio": 0.0,
+        "l1_ratio": null,
         "max_iter": 100,
+        "multi_class": "deprecated",
         "n_jobs": null,
-        "penalty": "deprecated",
+        "penalty": "l2",
         "random_state": 42,
         "solver": "liblinear",
         "tol": 0.0001,
         "verbose": 0,
         "warm_start": false
     },
-    "scikit_learn_version": "1.9.0",
+    "scikit_learn_version": "1.7.2",
     "validation_metrics": {
         "accuracy": 0.5833333333333334,
         "ece": 0.06676904252640893,
