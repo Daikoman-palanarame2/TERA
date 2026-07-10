@@ -92,7 +92,7 @@ class EvaluationRunner:
         router = RuntimeRouter(models_dir)
         cheap_model = LabeledMockCheapModel(outcomes_map)
         dense_model = DenseModel(default_text="Dense clean response\n")
-        rovl = ROVL(entropy_threshold=3.0, stop_sequences=["\n"])
+        rovl = ROVL(entropy_threshold=3.0)
         orchestrator = InferenceOrchestrator(router, cheap_model, dense_model, rovl)
         
         # 4. Execute orchestrator over dataset prompts

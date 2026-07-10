@@ -25,7 +25,7 @@ class TestAsyncTransition(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../backend/app/models"))
         self.router = RuntimeRouter(self.models_dir)
-        self.rovl = ROVL(entropy_threshold=settings.entropy_threshold, stop_sequences=["\n"])
+        self.rovl = ROVL(entropy_threshold=settings.entropy_threshold)
 
     async def test_sync_async_equivalence(self):
         """

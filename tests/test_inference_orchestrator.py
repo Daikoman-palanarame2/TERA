@@ -65,7 +65,7 @@ class TestInferenceOrchestrator(unittest.TestCase):
             }
         )
         self.dense_model = DenseModel(default_text="Dense clean completion\n")
-        self.rovl = ROVL(entropy_threshold=3.0, stop_sequences=["\n"])
+        self.rovl = ROVL(entropy_threshold=3.0)
 
     def test_direct_dense_routing(self):
         """
@@ -159,9 +159,9 @@ class TestInferenceOrchestrator(unittest.TestCase):
         self.assertEqual(response.final_response, "Dense clean completion\n")
         self.assertTrue(response.escalated)
         self.assertEqual(response.verification_result.status, VerificationStatus.FAIL)
-        # It fails schema validation because it is malformed, and stop token validation because it lacks '\n'
-        self.assertIn(FailureReason.MULTIPLE, response.verification_result.failure_reasons)
-        self.assertEqual(response.metadata["escalation_reason"], "multiple")
+        # It fails schema validation because it is malformed
+        self.assertIn(FailureReason.SCHEMA, response.verification_result.failure_reasons)
+        self.assertEqual(response.metadata["escalation_reason"], "schema")
 
     def test_cascade_routing_success(self):
         """

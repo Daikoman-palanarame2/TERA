@@ -7,6 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../backend")))
 
 from app.core.settings import Settings, get_model_capability_key
+Settings.model_config["env_file"] = None
 
 class TestModelDiscovery(unittest.TestCase):
 

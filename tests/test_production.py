@@ -60,6 +60,7 @@ class TestProductionPhase1(unittest.TestCase):
                 settings_invalid_model.validate_production()
             self.assertIn("is not in ALLOWED_MODELS", str(context.exception))
 
+    @patch("app.inference.fireworks_model.settings.fireworks_api_key", None)
     def test_fireworks_model_interface_conformance(self):
         """
         Verifies FireworksModel implements ModelInterface and checks API key settings.

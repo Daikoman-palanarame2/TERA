@@ -182,7 +182,7 @@ def main() -> None:
             # 3. Verify orchestrator initializes
             cheap_model = CheapModel()
             dense_model = DenseModel()
-            rovl = ROVL(entropy_threshold=settings.entropy_threshold, stop_sequences=["\n"])
+            rovl = ROVL(entropy_threshold=settings.entropy_threshold)
             _ = InferenceOrchestrator(router, cheap_model, dense_model, rovl)
             print("  Orchestrator Initialized OK.")
             
@@ -259,7 +259,7 @@ def main() -> None:
         cheap_model = FireworksModel(model_name=settings.cheap_model)
         dense_model = FireworksModel(model_name=settings.dense_model)
 
-    rovl = ROVL(entropy_threshold=settings.entropy_threshold, stop_sequences=["\n"])
+    rovl = ROVL(entropy_threshold=settings.entropy_threshold)
     orchestrator = InferenceOrchestrator(router, cheap_model, dense_model, rovl)
 
     # Load routing cost coefficients from environment
