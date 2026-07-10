@@ -4,6 +4,146 @@ This guide documents the procedures to build, configure, run, and self-test TERA
 
 ---
 
+## TERA System Architecture & Overview
+
+### Project Overview
+**TERA (Token-Efficient Routing Agent)** is an optimization-based, token-efficient LLM routing platform designed to dynamically route queries between a cheap model lane and a dense model lane on the Fireworks platform. It minimizes API cost and token consumption while preserving task accuracy under stringent format constraints.
+
+### System Architecture
+The TERA pipeline is modular and executes in microsecond scales on CPU before initiating external API requests:
+
+```
+                  ┌──────────────────────┐
+                  │     Input Prompt     │
+                  └──────────┬───────────┘
+                             │
+                             ▼
+               ┌───────────────────────────┐
+               │ Lexical Feature Extractor │
+               │ (Length, Symbols, Regex,  │
+               │        BM25 Score)        │
+               └─────────────┬─────────────┘
+                             │
+                             ▼
+               ┌───────────────────────────┐
+               │    Logistic Regressor     │
+               │ (Predict Raw Probability) │
+               └─────────────┬─────────────┘
+                             │
+                             ▼
+               ┌───────────────────────────┐
+               │    Isotonic Calibrator    │
+               │ (Calibrated Probability)  │
+               └─────────────┬─────────────┘
+                             │
+                             ▼
+               ┌───────────────────────────┐
+               │       Utility Engine      │
+               │   (Compute Expected EUs)  │
+               └─────────────┬─────────────┘
+                             │
+            ┌────────────────┼────────────────┐
+            │ (Route: Cheap) │ (Route: Cascade)│ (Route: Dense)
+            ▼                ▼                ▼
+     ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+     │ Cheap Model │  │ Cheap Model │  │ Dense Model │
+     └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+            │                │                │
+            ▼                ▼                │
+     ┌─────────────┐  ┌─────────────┐         │
+     │  ROVL Check │  │  ROVL Check │         │
+     └──────┬──────┘  └──────┬──────┘         │
+            │                │                │
+    PASS ───┼─── FAIL PASS ──┼── FAIL         │
+    ┌───────┴───┐     ┌──────┴──┐             │
+    ▼           ▼     ▼         ▼             ▼
+┌───────┐ ┌─────────┐┌──────┐┌─────────┐ ┌─────────┐
+│Return │ │Escalate ││Return││Escalate │ │Return   │
+│Cheap  │ │to Dense ││Cheap ││to Dense │ │Dense    │
+└───────┘ └─────────┘└──────┘└─────────┘ └─────────┘
+```
+
+*   **Router**: Extracts a 4-dimensional lexical representation from the input prompt: prompt length, symbol density (ratio of non-alphanumeric/non-space characters), regex category match density, and BM25 lexical similarity score against a reference task corpus.
+*   **Calibration**: Maps the logistic regressor's raw output to a calibrated probability using Isotonic Regression, ensuring that the estimated success rate matches empirical model performance.
+*   **Runtime Output Verification Layer (ROVL)**: Validates cheap model completions against:
+    *   *Schema constraints* (JSON structure or specific regular expressions).
+    *   *Character length* boundaries (minimum and maximum bounds).
+    *   *Stop-token verification* (ensuring completion terminates cleanly on valid stop tokens).
+    *   *Token entropy* (ensuring average sequence entropy is below a threshold to prevent hallucinations/gibberish).
+*   **Cascade Flow**: Computes the Expected Utility (EU) for each path (`cheap`, `cascade`, `dense`) using the calibrated success probability, token costs (\(C_{cheap}, C_{dense}\)), and task hyperparameters. If `cheap` or `cascade` is selected and the cheap model generation fails ROVL validation, it automatically escalates to execute the `dense` model lane.
+
+---
+
+## Directory Structure
+
+```
+.
+├── backend/
+│   ├── app/
+│   │   ├── api/             # FastAPI REST endpoints
+│   │   ├── core/            # Environment configurations & settings
+│   │   ├── evaluation/      # Offline batch benchmarking & sensitivity sweep
+│   │   ├── inference/       # Model adapters for Fireworks & Offline Mock adapter
+│   │   ├── models/          # Deserialized router coefficients & BM25 corpus
+│   │   ├── router/          # Feature extraction, BM25 similarity & utility engine
+│   │   ├── schemas/         # Request and Response schemas
+│   │   ├── training/        # ML model training and calibration scripts
+│   │   └── verification/    # ROVL and validators (JSON, Regex, Entropy)
+│   └── requirements.txt     # Python environment package requirements
+├── docs/                    # Architecture, UI/UX, and Deployment Specifications
+├── input/                   # Default tasks input directory
+├── output/                  # Default results output directory
+├── tests/                   # Extensive pytest suite (64 unit tests)
+├── Dockerfile               # Production container definition
+├── .dockerignore            # Build ignore specifications
+├── .gitignore               # Git version control ignore configuration
+└── entrypoint.sh            # Pre-flight validator and runner entrypoint script
+```
+
+---
+
+## Local Python Setup
+
+To run tests and scripts locally without Docker:
+
+1. **Create and Activate a Virtual Environment:**
+   ```bash
+   python -m venv backend/.venv
+   # On Windows:
+   backend\.venv\Scripts\activate
+   # On Linux/macOS:
+   source backend/.venv/bin/activate
+   ```
+
+2. **Install Dependencies:**
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+3. **Run Unit Tests:**
+   ```bash
+   $env:PYTHONPATH="backend" # Windows PowerShell
+   # export PYTHONPATH="backend" # Linux/macOS
+   pytest tests/
+   ```
+
+---
+
+## Evaluation & Benchmarking
+
+TERA includes benchmarking and evaluation modules to test router performance:
+
+*   **Offline Batch Benchmarking**: Runs the router against a static labeled csv dataset to compute accuracy, cost, and latency comparisons:
+    ```bash
+    python backend/app/evaluation/run_eval.py
+    ```
+*   **Calibration Parameter Sweep**: Sweeps across the \(\lambda\) frugality coefficient to output cost-accuracy trade-off curves:
+    ```bash
+    python backend/app/evaluation/run_sensitivity.py
+    ```
+
+---
+
 ## 1. Directory Structures & Volume Mounts
 The container expects two directory volumes to be mounted at runtime:
 - `/input`: A volume containing the task definition payload `/input/tasks.json`.
