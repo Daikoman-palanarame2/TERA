@@ -1,0 +1,360 @@
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 51.
+summarize: Shorten this short statement about quantum physics: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+summarize: Write a single-sentence summary of this paragraph about artificial intelligence: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+translate: Translate this short phrase to Japanese: 'Good morning, where is the hotel?'
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+summarize: Write a single-sentence summary of this paragraph about clean energy: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound EmmaX melting at 1180C +/- 1.5C, while compound EmmaY melted at 2065C +/- 2.0C.'
+translate: Translate this philosophical text to Russian: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+calculate: Solve this quadratic equation: x^2 + 84x - 112 = 0 and find both real roots.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 27.
+calculate: Solve this basic linear equation: 12x + 30 = 120
+summarize: Shorten this short statement about artificial intelligence: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 24.
+calculate: Evaluate the definite integral of x * sin(47x) from 0 to pi, showing all integration by parts steps.
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 18).
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 23)
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 31).
+translate: Translate this short phrase to Russian: 'Good morning, where is the hotel?'
+summarize: Write a comprehensive executive summary of this article about inflation rates: 'Inflation rates has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+extract: Retrieve all names and emails from this list: '1. Michael - michael@example.com; 2. Alice - alice@example.org'.
+explain: What is the capital city of New York's country?
+explain: What is the capital city of Paris's country?
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+explain: What is the capital city of Toronto's country?
+extract: Find the city in this text: 'We are traveling to London next week.'
+extract: Find the city in this text: 'We are traveling to Rome next week.'
+translate: Translate this philosophical text to French: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 39.
+code: Write a short haiku about inflation rates.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 60)
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 60.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about space exploration.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 30.
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 58.
+code: Write a short haiku about macroeconomics.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about clean energy.
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 30).
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 15)
+code: Draft a four-stanza poem about the concept of inflation rates and the flow of time.
+extract: Find the city in this text: 'We are traveling to Sydney next week.'
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 1)
+calculate: Solve this quadratic equation: x^2 + 66x - 88 = 0 and find both real roots.
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+translate: Translate the following formal business email to Chinese: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+extract: Retrieve all names and emails from this list: '1. John - john@example.com; 2. Alice - alice@example.org'.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about inflation rates.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 33.
+summarize: Write a comprehensive executive summary of this article about space exploration: 'Space exploration has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 46.
+code: Write a short haiku about artificial intelligence.
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound EmilyX melting at 1040C +/- 1.5C, while compound EmilyY melted at 1820C +/- 2.0C.'
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 44)
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 7)
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound SarahX melting at 1020C +/- 1.5C, while compound SarahY melted at 1785C +/- 2.0C.'
+summarize: Shorten this short statement about inflation rates: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+extract: Find the city in this text: 'We are traveling to Beijing next week.'
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 56.
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 24).
+code: Write a Python function to check if the number 26 is prime.
+summarize: Shorten this short statement about clean energy: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 15).
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 57.
+extract: Retrieve all names and emails from this list: '1. Robert - robert@example.com; 2. Alice - alice@example.org'.
+translate: Translate this philosophical text to Arabic: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+calculate: Solve this quadratic equation: x^2 + 111x - 148 = 0 and find both real roots.
+code: Draft a four-stanza poem about the concept of clean energy and the flow of time.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 57).
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 35).
+calculate: Solve this basic linear equation: 34x + 85 = 340
+translate: Translate this philosophical text to Italian: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about artificial intelligence.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 53.
+summarize: Write a single-sentence summary of this paragraph about quantum physics: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 25)
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 14).
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound MichaelX melting at 860C +/- 1.5C, while compound MichaelY melted at 1505C +/- 2.0C.'
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+calculate: Evaluate the definite integral of x * sin(52x) from 0 to pi, showing all integration by parts steps.
+summarize: Write a comprehensive executive summary of this article about space exploration: 'Space exploration has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+summarize: Shorten this short statement about organic chemistry: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+translate: Translate this philosophical text to German: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+summarize: Write a comprehensive executive summary of this article about renaissance art: 'Renaissance art has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 26)
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 26).
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 10)
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 5).
+code: Draft a four-stanza poem about the concept of macroeconomics and the flow of time.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 31.
+code: Write a short haiku about quantum physics.
+summarize: Write a comprehensive executive summary of this article about clean energy: 'Clean energy has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+explain: What is the capital city of Sydney's country?
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound JohnX melting at 1200C +/- 1.5C, while compound JohnY melted at 2100C +/- 2.0C.'
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about artificial intelligence.
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 54)
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 20).
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+extract: Retrieve all names and emails from this list: '1. Emily - emily@example.com; 2. Alice - alice@example.org'.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about inflation rates.
+summarize: Shorten this short statement about renaissance art: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 49.
+calculate: Solve this quadratic equation: x^2 + 96x - 128 = 0 and find both real roots.
+translate: Translate the following formal business email to Spanish: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+summarize: Write a single-sentence summary of this paragraph about inflation rates: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+translate: Translate this philosophical text to Japanese: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+translate: Translate this short phrase to Chinese: 'Good morning, where is the hotel?'
+summarize: Shorten this short statement about space exploration: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+summarize: Write a single-sentence summary of this paragraph about renaissance art: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+translate: Translate the following formal business email to Arabic: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 49)
+calculate: Evaluate the definite integral of x * sin(58x) from 0 to pi, showing all integration by parts steps.
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 2)
+summarize: Write a comprehensive executive summary of this article about quantum physics: 'Quantum physics has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 39)
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 46)
+explain: What is the capital city of Toronto's country?
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 48.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+summarize: Shorten this short statement about renaissance art: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+extract: Find the city in this text: 'We are traveling to Sydney next week.'
+explain: What is the capital city of Tokyo's country?
+summarize: Write a single-sentence summary of this paragraph about artificial intelligence: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Draft a four-stanza poem about the concept of space exploration and the flow of time.
+summarize: Write a single-sentence summary of this paragraph about macroeconomics: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 37.
+code: Write a Python function to check if the number 13 is prime.
+summarize: Write a single-sentence summary of this paragraph about inflation rates: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+translate: Translate this short phrase to Spanish: 'Good morning, where is the hotel?'
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+calculate: Solve this basic linear equation: 6x + 15 = 60
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about inflation rates.
+code: Write a short haiku about quantum physics.
+calculate: Evaluate the definite integral of x * sin(48x) from 0 to pi, showing all integration by parts steps.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 50.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about clean energy.
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 50)
+translate: Translate this philosophical text to Arabic: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+summarize: Write a comprehensive executive summary of this article about quantum physics: 'Quantum physics has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 43.
+summarize: Write a single-sentence summary of this paragraph about macroeconomics: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Draft a four-stanza poem about the concept of organic chemistry and the flow of time.
+calculate: Evaluate the definite integral of x * sin(56x) from 0 to pi, showing all integration by parts steps.
+translate: Translate the following formal business email to Russian: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+calculate: Evaluate the definite integral of x * sin(51x) from 0 to pi, showing all integration by parts steps.
+code: Write a short haiku about clean energy.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 56)
+calculate: Solve this basic linear equation: 24x + 60 = 240
+code: Write a Python function to check if the number 260 is prime.
+calculate: Solve this quadratic equation: x^2 + 93x - 124 = 0 and find both real roots.
+translate: Translate this short phrase to German: 'Good morning, where is the hotel?'
+extract: Find the city in this text: 'We are traveling to Paris next week.'
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 20)
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 18)
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 48).
+translate: Translate this short phrase to Arabic: 'Good morning, where is the hotel?'
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 52.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 23.
+translate: Translate the following formal business email to Portuguese: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 2)
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about quantum physics.
+code: Draft a four-stanza poem about the concept of space exploration and the flow of time.
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 33)
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 19)
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound EmmaX melting at 980C +/- 1.5C, while compound EmmaY melted at 1715C +/- 2.0C.'
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: What is the capital city of Sydney's country?
+translate: Translate the following formal business email to Japanese: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about organic chemistry.
+summarize: Write a comprehensive executive summary of this article about artificial intelligence: 'Artificial intelligence has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+translate: Translate this short phrase to Arabic: 'Good morning, where is the hotel?'
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+translate: Translate this philosophical text to Korean: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+summarize: Shorten this short statement about clean energy: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+calculate: Evaluate the definite integral of x * sin(41x) from 0 to pi, showing all integration by parts steps.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 59).
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 16)
+calculate: Solve this basic linear equation: 28x + 70 = 280
+calculate: Evaluate the definite integral of x * sin(60x) from 0 to pi, showing all integration by parts steps.
+extract: Retrieve all names and emails from this list: '1. Jessica - jessica@example.com; 2. Alice - alice@example.org'.
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+translate: Translate this philosophical text to German: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+calculate: Solve this quadratic equation: x^2 + 102x - 136 = 0 and find both real roots.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 38)
+translate: Translate this short phrase to Chinese: 'Good morning, where is the hotel?'
+extract: Find the city in this text: 'We are traveling to Toronto next week.'
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 17)
+extract: Find the city in this text: 'We are traveling to Berlin next week.'
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 15)
+extract: Find the city in this text: 'We are traveling to Beijing next week.'
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 3)
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 49).
+calculate: Evaluate the definite integral of x * sin(45x) from 0 to pi, showing all integration by parts steps.
+translate: Translate this short phrase to Korean: 'Good morning, where is the hotel?'
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 35.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 22.
+extract: Retrieve all names and emails from this list: '1. Sarah - sarah@example.com; 2. Alice - alice@example.org'.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 53).
+calculate: Solve this quadratic equation: x^2 + 75x - 100 = 0 and find both real roots.
+code: Draft a four-stanza poem about the concept of macroeconomics and the flow of time.
+calculate: Solve this quadratic equation: x^2 + 108x - 144 = 0 and find both real roots.
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 38).
+code: Write a short haiku about renaissance art.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 34)
+code: Write a short haiku about space exploration.
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 3)
+translate: Translate this short phrase to Russian: 'Good morning, where is the hotel?'
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 45.
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound DavidX melting at 1080C +/- 1.5C, while compound DavidY melted at 1890C +/- 2.0C.'
+translate: Translate this short phrase to Portuguese: 'Good morning, where is the hotel?'
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 34).
+translate: Translate the following formal business email to Japanese: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+code: Write a short haiku about clean energy.
+summarize: Shorten this short statement about inflation rates: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 11).
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 46).
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about quantum physics.
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 26.
+extract: Find the city in this text: 'We are traveling to Cairo next week.'
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about space exploration.
+explain: What is the capital city of Beijing's country?
+extract: Find the city in this text: 'We are traveling to Rome next week.'
+calculate: Evaluate the definite integral of x * sin(54x) from 0 to pi, showing all integration by parts steps.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 51).
+calculate: Solve this quadratic equation: x^2 + 114x - 152 = 0 and find both real roots.
+code: Design a multi-threaded web crawler in C++ that respects robots.txt and uses a thread pool of size 54.
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+code: Draft a four-stanza poem about the concept of artificial intelligence and the flow of time.
+translate: Translate the following formal business email to Korean: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+extract: Find the city in this text: 'We are traveling to Toronto next week.'
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 29.
+calculate: Solve this quadratic equation: x^2 + 99x - 132 = 0 and find both real roots.
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 6)
+translate: Translate this short phrase to Portuguese: 'Good morning, where is the hotel?'
+calculate: Solve this basic linear equation: 20x + 50 = 200
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+extract: Retrieve all names and emails from this list: '1. Jessica - jessica@example.com; 2. Alice - alice@example.org'.
+summarize: Write a single-sentence summary of this paragraph about organic chemistry: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 36.
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about renaissance art.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 44).
+code: Implement a Python class representing a Binary Search Tree with insert and search methods for node 28.
+summarize: Write a comprehensive executive summary of this article about macroeconomics: 'Macroeconomics has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+code: Write a short haiku about space exploration.
+code: Write a Python function to check if the number 247 is prime.
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound MichaelX melting at 1060C +/- 1.5C, while compound MichaelY melted at 1855C +/- 2.0C.'
+calculate: Solve this basic linear equation: 38x + 95 = 380
+summarize: Write a single-sentence summary of this paragraph about renaissance art: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+code: Write a short haiku about organic chemistry.
+code: Write a Python function to check if the number 104 is prime.
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+translate: Translate this philosophical text to Portuguese: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+summarize: Write a comprehensive executive summary of this article about space exploration: 'Space exploration has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+extract: Retrieve all names and emails from this list: '1. David - david@example.com; 2. Alice - alice@example.org'.
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+extract: Retrieve all names and emails from this list: '1. David - david@example.com; 2. Alice - alice@example.org'.
+translate: Translate the following formal business email to German: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+calculate: Solve this quadratic equation: x^2 + 117x - 156 = 0 and find both real roots.
+code: Draft a four-stanza poem about the concept of macroeconomics and the flow of time.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 21)
+translate: Translate this short phrase to German: 'Good morning, where is the hotel?'
+code: Draft a four-stanza poem about the concept of quantum physics and the flow of time.
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 12).
+translate: Translate this philosophical text to French: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+summarize: Shorten this short statement about quantum physics: 'The quick development of technologies has changed our daily routines in many unexpected ways.'
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 7).
+code: Write a short haiku about macroeconomics.
+summarize: Write a comprehensive executive summary of this article about inflation rates: 'Inflation rates has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 10)
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 48)
+translate: Translate the following formal business email to Russian: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 22)
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 58).
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 47).
+calculate: Solve this basic linear equation: 40x + 100 = 400
+explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 54).
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+translate: Translate this short phrase to French: 'Good morning, where is the hotel?'
+summarize: Write a single-sentence summary of this paragraph about space exploration: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about organic chemistry.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 36)
+json: Generate a simple JSON object representing a book with fields 'title' and 'author' (ID: 13).
+code: Draft a four-stanza poem about the concept of inflation rates and the flow of time.
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+explain: What is the capital city of London's country?
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 13)
+summarize: Write a comprehensive executive summary of this article about artificial intelligence: 'Artificial intelligence has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+extract: Find the city in this text: 'We are traveling to Tokyo next week.'
+summarize: Write a comprehensive executive summary of this article about macroeconomics: 'Macroeconomics has witnessed a massive influx of funding. Major institutions are upgrading their infrastructure. However, regulatory frameworks remain underdeveloped, posing severe risks for retail consumers and systemic stability.'
+translate: Translate the following formal business email to Arabic: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+code: Write a complete movie script scene set in a base on Mars, including character dialogues, stage directions, and audio cues about renaissance art.
+extract: Find the city in this text: 'We are traveling to Berlin next week.'
+extract: Retrieve all names and emails from this list: '1. Emma - emma@example.com; 2. Alice - alice@example.org'.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 52).
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 7)
+extract: Find the city in this text: 'We are traveling to New York next week.'
+explain: Analyze this knights and knaves puzzle: Knight A says 'B is a knave'. Knight B says 'A and I are of opposite types'. What are they? (ID: 42)
+classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 40).
+calculate: Solve this quadratic equation: x^2 + 72x - 96 = 0 and find both real roots.
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound SophiaX melting at 1140C +/- 1.5C, while compound SophiaY melted at 1995C +/- 2.0C.'
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound SophiaX melting at 940C +/- 1.5C, while compound SophiaY melted at 1645C +/- 2.0C.'
+calculate: Solve this quadratic equation: x^2 + 63x - 84 = 0 and find both real roots.
+extract: Retrieve all names and emails from this list: '1. Michael - michael@example.com; 2. Alice - alice@example.org'.
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 21).
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: What is the capital city of Tokyo's country?
+translate: Translate this short phrase to Japanese: 'Good morning, where is the hotel?'
+translate: Translate this philosophical text to Portuguese: 'All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood.'
+calculate: Evaluate the definite integral of x * sin(59x) from 0 to pi, showing all integration by parts steps.
+code: Draft a four-stanza poem about the concept of organic chemistry and the flow of time.
+extract: Retrieve all names and emails from this list: '1. Emma - emma@example.com; 2. Alice - alice@example.org'.
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 42).
+code: Draft a four-stanza poem about the concept of quantum physics and the flow of time.
+translate: Translate this short phrase to Korean: 'Good morning, where is the hotel?'
+extract: Retrieve all names and emails from this list: '1. Alex - alex@example.com; 2. Alice - alice@example.org'.
+extract: Parse this scientific abstract to extract all chemical compounds, their experimental melting points, and associated error bounds: 'We observed compound DavidX melting at 880C +/- 1.5C, while compound DavidY melted at 1540C +/- 2.0C.'
+explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll.
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 1)
+explain: If box A is inside box B, and box B is inside box C, is box A inside box C? (ID: 12)
+translate: Translate the following formal business email to German: 'Dear Sir, we are writing to confirm that your shipment has been delivered successfully. Please sign the attached invoice.'
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports.
+explain: A farmer needs to cross a river with a wolf, a goat, and a cabbage. If left alone, the wolf eats goat, or goat eats cabbage. Explain the steps to cross safely. (ID: 30)
+explain: What is the capital city of Paris's country?
+extract: Retrieve all names and emails from this list: '1. Emily - emily@example.com; 2. Alice - alice@example.org'.
+summarize: Write a single-sentence summary of this paragraph about macroeconomics: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+code: Write a Python function to check if the number 117 is prime.
+json: Generate a valid JSON schema representing a user profile containing email validation and nested address fields (ID: 33).
+classify: Is this positive or negative: 'This product is absolute garbage!' (ID: 12)
+summarize: Write a single-sentence summary of this paragraph about clean energy: 'Greenhouse gas emissions continue to rise globally, exacerbating extreme weather patterns. Experts emphasize that transitioning to renewable sources is critical to prevent rising sea levels.'
+json: Create a complex nested JSON schema for an inventory management system order with recursive reference arrays, currency constraints, and status enums (ID: 56).
+calculate: Solve this basic linear equation: 8x + 20 = 80
+code: Write a Python function to check if the number 208 is prime.

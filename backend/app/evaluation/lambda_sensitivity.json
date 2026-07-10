@@ -1,0 +1,120 @@
+{
+    "experiment_metadata": {
+        "c2": 10.0,
+        "c3": 100.0,
+        "alpha_dense": 0.9,
+        "dataset_path": "C:\\Users\\MonMon\\Desktop\\TERA\\backend\\app\\evaluation\\sample_benchmark.csv",
+        "timestamp": "2026-07-10T10:55:17.075477Z",
+        "training_metadata": {
+            "schema_version": "1.0.0",
+            "feature_version": "1.0.0",
+            "training_timestamp": "2026-07-10T00:46:21.304654+00:00",
+            "dataset_size": 600,
+            "split_ratios": {
+                "train": 0.6,
+                "calibration": 0.2,
+                "validation": 0.2
+            },
+            "split_sizes": {
+                "train": 360,
+                "calibration": 120,
+                "validation": 120
+            },
+            "random_seed": 42,
+            "logistic_regression_parameters": {
+                "C": 1.0,
+                "class_weight": null,
+                "dual": false,
+                "fit_intercept": true,
+                "intercept_scaling": 1,
+                "l1_ratio": 0.0,
+                "max_iter": 100,
+                "n_jobs": null,
+                "penalty": "deprecated",
+                "random_state": 42,
+                "solver": "liblinear",
+                "tol": 0.0001,
+                "verbose": 0,
+                "warm_start": false
+            },
+            "scikit_learn_version": "1.9.0",
+            "validation_metrics": {
+                "accuracy": 0.5833333333333334,
+                "ece": 0.06676904252640893,
+                "brier_score": 0.24221894729944526
+            }
+        }
+    },
+    "sweep_results": [
+        {
+            "lambda": 0.2,
+            "accuracy": 0.9406666666666669,
+            "average_token_cost": 49.333333333333336,
+            "average_normalized_cost": 0.49333333333333335,
+            "cheap_route_pct": 100.0,
+            "cascade_route_pct": 0.0,
+            "dense_route_pct": 0.0,
+            "escalation_rate_pct": 39.33333333333333,
+            "false_cheap_decisions": 60,
+            "false_dense_decisions": 0,
+            "expected_calibration_error": 0.12641714589580544,
+            "brier_score": 0.2560680584172883
+        },
+        {
+            "lambda": 0.4,
+            "accuracy": 0.9406666666666669,
+            "average_token_cost": 49.333333333333336,
+            "average_normalized_cost": 0.49333333333333335,
+            "cheap_route_pct": 100.0,
+            "cascade_route_pct": 0.0,
+            "dense_route_pct": 0.0,
+            "escalation_rate_pct": 39.33333333333333,
+            "false_cheap_decisions": 60,
+            "false_dense_decisions": 0,
+            "expected_calibration_error": 0.12641714589580544,
+            "brier_score": 0.2560680584172883
+        },
+        {
+            "lambda": 0.6,
+            "accuracy": 0.9406666666666669,
+            "average_token_cost": 49.333333333333336,
+            "average_normalized_cost": 0.49333333333333335,
+            "cheap_route_pct": 0.0,
+            "cascade_route_pct": 100.0,
+            "dense_route_pct": 0.0,
+            "escalation_rate_pct": 39.33333333333333,
+            "false_cheap_decisions": 60,
+            "false_dense_decisions": 0,
+            "expected_calibration_error": 0.12641714589580544,
+            "brier_score": 0.2560680584172883
+        },
+        {
+            "lambda": 0.8,
+            "accuracy": 0.9406666666666669,
+            "average_token_cost": 49.333333333333336,
+            "average_normalized_cost": 0.49333333333333335,
+            "cheap_route_pct": 0.0,
+            "cascade_route_pct": 100.0,
+            "dense_route_pct": 0.0,
+            "escalation_rate_pct": 39.33333333333333,
+            "false_cheap_decisions": 60,
+            "false_dense_decisions": 0,
+            "expected_calibration_error": 0.12641714589580544,
+            "brier_score": 0.2560680584172883
+        },
+        {
+            "lambda": 1.0,
+            "accuracy": 0.9406666666666669,
+            "average_token_cost": 49.333333333333336,
+            "average_normalized_cost": 0.49333333333333335,
+            "cheap_route_pct": 0.0,
+            "cascade_route_pct": 100.0,
+            "dense_route_pct": 0.0,
+            "escalation_rate_pct": 39.33333333333333,
+            "false_cheap_decisions": 60,
+            "false_dense_decisions": 0,
+            "expected_calibration_error": 0.12641714589580544,
+            "brier_score": 0.2560680584172883
+        }
+    ]
+}

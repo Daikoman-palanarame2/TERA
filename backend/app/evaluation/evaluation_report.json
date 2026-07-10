@@ -1,0 +1,38 @@
+{
+    "tera": {
+        "dataset_size": 150,
+        "routing_distribution_pct": {
+            "cheap": 100.0,
+            "dense": 0.0,
+            "cascade": 0.0
+        },
+        "escalation_rate_pct": 39.33333333333333,
+        "false_decisions": {
+            "false_cheap": 60,
+            "false_dense": 0
+        },
+        "accuracy": 0.9406666666666669,
+        "average_cost": 49.333333333333336,
+        "average_normalized_cost": 0.49333333333333335,
+        "average_latency_ms": 0.0023553307012965283,
+        "expected_calibration_error": 0.12641714589580544,
+        "brier_score": 0.2560680584172883
+    },
+    "baselines": {
+        "always_cheap": {
+            "accuracy": 0.6,
+            "average_cost": 10.0,
+            "normalized_cost": 0.1
+        },
+        "always_dense": {
+            "accuracy": 0.9,
+            "average_cost": 100.0,
+            "normalized_cost": 1.0
+        },
+        "random_routing": {
+            "accuracy": 0.7413333333333341,
+            "average_cost": 50.8,
+            "normalized_cost": 0.508
+        }
+    }
+}

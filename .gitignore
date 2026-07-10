@@ -1,0 +1,15 @@
+backend/.venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+input/
+output/
+logs/
+.env
+.env.*
+.DS_Store
+Thumbs.db
