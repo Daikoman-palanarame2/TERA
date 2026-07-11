@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: TERA-router-inspector
+    env: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      # Fireworks API Secret (Required: User must enter their own value during Render deployment setup)
+      - key: FIREWORKS_API_KEY
+        sync: false
+
+      # Fireworks Base Endpoint URL (Default production configuration)
+      - key: FIREWORKS_BASE_URL
+        value: https://api.fireworks.ai/inference/v1
+
+      # Allowed Models authorized for TERA routing logic
+      - key: ALLOWED_MODELS
+        value: accounts/fireworks/models/deepseek-v4-pro,accounts/fireworks/models/gpt-oss-120b
+
+      # Concurrency limit configuration
+      - key: MAX_CONCURRENCY
+        value: "4"

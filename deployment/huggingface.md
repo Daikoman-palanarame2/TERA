@@ -1,6 +1,11 @@
 # Deploying TERA on Hugging Face Spaces
 
-This guide provides step-by-step, beginner-friendly instructions to deploy the TERA (Token-Efficient Routing Agent) application as a public interactive web service on Hugging Face Spaces.
+> [!WARNING]
+> **DEPRECATED DEPLOYMENT TARGET:** Docker-based Hugging Face Spaces are no longer the recommended deployment target for TERA because they are not available on the free tier for our deployment requirements.
+> 
+> **Official Deployment Target:** Render is now the official deployment target. Please use [Render Deployment Guide](file:///c:/Users/MonMon/Desktop/TERA/deployment/render.md) instead to set up your interactive web demo.
+
+This guide provides historical step-by-step instructions to deploy the TERA application as a web service on Hugging Face Spaces.
 
 ---
 

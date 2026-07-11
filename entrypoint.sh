@@ -7,8 +7,9 @@ echo "===================================="
 
 # Check for web launcher mode (no arguments, or first argument is "web")
 if [ $# -eq 0 ] || [ "$1" = "web" ]; then
-  echo "Launching TERA Web Server on port 7860..."
-  exec uvicorn app.main:app --host 0.0.0.0 --port 7860
+  TARGET_PORT=${PORT:-7860}
+  echo "Launching TERA Web Server on port $TARGET_PORT..."
+  exec uvicorn app.main:app --host 0.0.0.0 --port "$TARGET_PORT"
 fi
 
 # Check if self-test mode is requested

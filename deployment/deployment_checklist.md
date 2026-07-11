@@ -1,6 +1,6 @@
 # TERA Pre-Flight Release & Deployment Checklist
 
-Use this checklist to verify repository integrity and correctness before deploying to Hugging Face Spaces or packaging public Docker container releases.
+Use this checklist to verify repository integrity and correctness before deploying to Render or packaging public Docker container releases.
 
 ---
 
@@ -14,7 +14,7 @@ Use this checklist to verify repository integrity and correctness before deployi
 ## 2. Docker Configuration
 - [ ] **Platform Target:** The Dockerfile specifies `--platform=linux/amd64` to avoid architecture mismatches.
 - [ ] **Multi-stage Integrity:** Frontend Next.js build (`frontend-builder` stage) compiles successfully before python setup.
-- [ ] **Port Binding:** Container exposes port `7860` for Hugging Face Spaces routing compatibility.
+- [ ] **Dynamic Port Binding:** Container binds port dynamically via the `$PORT` environment variable injected by Render (falling back to `7860` if unset).
 - [ ] **Conditional Static Mount:** Backend `app/main.py` starts up successfully even if static UI assets are absent.
 
 ---
@@ -27,7 +27,7 @@ Use this checklist to verify repository integrity and correctness before deployi
 
 ---
 
-## 4. Application Verification
+## 4. Local Application Verification
 - [ ] **All 64 Unit Tests Pass:**
   ```bash
   python -m unittest discover tests
@@ -38,3 +38,12 @@ Use this checklist to verify repository integrity and correctness before deployi
 - [ ] **UI Presentation Layer Decoupling:** The UI requests data from the backend `/api/router-inspector` and computes no routing, cost, or utility decisions on the client side.
 - [ ] **Savings Transparency:** Backend returns dense baseline cost, TERA actual cost, cost savings, and token savings. The UI renders them.
 - [ ] **Mock Adapter Mode:** App functions in mock offline mode when no API keys are present.
+
+---
+
+## 5. Render Live Public Deployment Smoke Test
+- [ ] **HTTPS Deployment URL:** The web service dashboard loads correctly over HTTPS.
+- [ ] **Health Probe:** `GET https://<your-service>.onrender.com/health` returns `{"status": "ok"}`
+- [ ] **Readiness Probe:** `GET https://<your-service>.onrender.com/ready` returns `{"status": "ok"}`
+- [ ] **Cold Start Tolerance:** Opening the app after 15 minutes of inactivity successfully triggers container wake-up within 50-90s, and pages load successfully without console failures.
+- [ ] **Prompt Verification:** Submitting a query like `What is 2 + 2?` successfully executes routing decisions, retrieves Fireworks API token counts and latencies, and renders the backend-computed savings percentages.
