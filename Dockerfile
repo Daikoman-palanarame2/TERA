@@ -1,5 +1,7 @@
 # Stage 1: Build Next.js frontend
 FROM --platform=linux/amd64 node:18-alpine AS frontend-builder
+# Install libc6-compat for Next.js compiler / Turbopack native binary support on Alpine
+RUN apk add --no-cache libc6-compat
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
