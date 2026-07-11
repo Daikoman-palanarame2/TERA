@@ -106,11 +106,11 @@ class Settings(BaseSettings):
 
     # Base Model Lane defaults
     cheap_model_default: str = Field(
-        default="llama3-8b", 
+        default="accounts/fireworks/models/deepseek-v4-pro", 
         validation_alias=AliasChoices("cheap_model_default", "SMALL_MODEL")
     )
     dense_model_default: str = Field(
-        default="gpt-4.1", 
+        default="accounts/fireworks/models/gpt-oss-120b", 
         validation_alias=AliasChoices("dense_model_default", "LARGE_MODEL")
     )
     
@@ -211,6 +211,14 @@ class Settings(BaseSettings):
                 raise ValueError(
                     f"Configuration error: Dense model '{dense}' is not in ALLOWED_MODELS: {allowed}"
                 )
+        else:
+            print(
+                f"Notice: ALLOWED_MODELS is not set. Falling back to default Fireworks models:\n"
+                f"  Cheap model -> {cheap}\n"
+                f"  Dense model -> {dense}\n"
+                f"Ensure these models are accessible for your Fireworks account.",
+                file=sys.stderr
+            )
                 
     def print_startup_summary(self) -> None:
         """

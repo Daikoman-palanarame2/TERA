@@ -165,7 +165,7 @@ To execute the batch processing on mounted input/output directories with a live 
 docker run --rm \
   -e FIREWORKS_API_KEY="your_api_key_here" \
   -e FIREWORKS_BASE_URL="https://api.fireworks.ai/inference/v1" \
-  -e ALLOWED_MODELS="accounts/fireworks/models/llama-v3-8b-instruct, accounts/fireworks/models/llama-v3-70b-instruct" \
+  -e ALLOWED_MODELS="accounts/fireworks/models/deepseek-v4-pro, accounts/fireworks/models/gpt-oss-120b" \
   -v "$(pwd)/input:/input" \
   -v "$(pwd)/output:/output" \
   tera-router
@@ -194,9 +194,14 @@ docker run --rm \
 | :--- | :--- | :--- |
 | `FIREWORKS_API_KEY` | Fireworks API Authorization Bearer token. | Required in Production |
 | `FIREWORKS_BASE_URL` | Base URL endpoint (defaults to `https://api.fireworks.ai/inference/v1`). | Optional |
-| `ALLOWED_MODELS` | Comma-separated list of approved Fireworks model tags. | Required in Production |
+| `ALLOWED_MODELS` | Comma-separated list of approved Fireworks model tags. | Optional |
 | `SMALL_MODEL` | Explicitly sets the cheap model lane (overrides automatic discovery). | Optional |
 | `LARGE_MODEL` | Explicitly sets the dense model lane (overrides automatic discovery). | Optional |
+
+**Model Resolution Precedence:**
+1. `SMALL_MODEL` / `LARGE_MODEL` / `cheap_model` / `dense_model` (Explicit Overrides - Highest Priority).
+2. `ALLOWED_MODELS` (Automatic Discovery - Picks lowest parameter/tier model as cheap, highest as dense).
+3. Fallback Defaults (Cheap: `accounts/fireworks/models/deepseek-v4-pro`, Dense: `accounts/fireworks/models/gpt-oss-120b` - Lowest Priority).
 
 ---
 
@@ -227,22 +232,8 @@ The generated output compiled by the batch harness follows this format:
 ```json
 [
   {
-    "id": "smoke-task-1",
-    "final_response": "Cheap model response\n",
-    "selected_route": "cheap",
-    "escalated": false,
-    "metadata": {
-      "router_probability": 0.8235,
-      "cheap_utility": 0.3617,
-      "dense_utility": -0.05,
-      "cascade_utility": 0.3529,
-      "verification_time_ms": 0.01269,
-      "inference_time_ms": 0.0038,
-      "escalation_reason": null,
-      "model_metadata": {
-        "model": "cheap_mock_default"
-      }
-    }
+    "task_id": "smoke-task-1",
+    "answer": "Cheap model response\n"
   }
 ]
 ```

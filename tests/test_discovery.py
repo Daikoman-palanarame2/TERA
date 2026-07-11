@@ -38,8 +38,8 @@ class TestModelDiscovery(unittest.TestCase):
         settings = Settings()
         cheap, dense, method = settings.get_resolved_models()
         
-        self.assertEqual(cheap, "llama3-8b")
-        self.assertEqual(dense, "gpt-4.1")
+        self.assertEqual(cheap, "accounts/fireworks/models/deepseek-v4-pro")
+        self.assertEqual(dense, "accounts/fireworks/models/gpt-oss-120b")
         self.assertEqual(method, "Fallback Defaults")
 
     @patch.dict(os.environ, {
@@ -76,7 +76,7 @@ class TestModelDiscovery(unittest.TestCase):
         
         self.assertEqual(cheap, "custom-cheap-override")
         # Uses the default dense since only SMALL_MODEL was overridden in this test config
-        self.assertEqual(dense, "gpt-4.1")
+        self.assertEqual(dense, "accounts/fireworks/models/gpt-oss-120b")
         self.assertEqual(method, "Manual Override")
 
     @patch.dict(os.environ, {"ALLOWED_MODELS": ""})
