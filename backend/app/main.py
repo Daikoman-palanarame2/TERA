@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.logging import setup_logging
 from app.api.endpoints import router as api_router
+from app.api.router_inspector import router as inspector_router
 
 # Initialize structured logging
 setup_logging()
 
 app = FastAPI(
     title="TERA Backend",
-    description="Token-Efficient Routing Agent (TERA) Backend Skeleton",
+    description="Token-Efficient Routing Agent (TERA) Backend",
     version="1.0.0"
 )
 
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 # Register API Router
-# Expose endpoints under '/api/v1' namespace and at the root level for developer convenience
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(api_router)
+app.include_router(inspector_router, prefix="/api")
+app.include_router(inspector_router)
