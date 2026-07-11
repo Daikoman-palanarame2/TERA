@@ -1,0 +1,482 @@
+{
+    "math_001": {
+        "category": "Mathematics",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "math_002": {
+        "category": "Mathematics",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "math_003": {
+        "category": "Mathematics",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "math_004": {
+        "category": "Mathematics",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "math_005": {
+        "category": "Mathematics",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "math_006": {
+        "category": "Mathematics",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "math_007": {
+        "category": "Mathematics",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "math_008": {
+        "category": "Mathematics",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "math_009": {
+        "category": "Mathematics",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "math_010": {
+        "category": "Mathematics",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_001": {
+        "category": "Programming",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_002": {
+        "category": "Programming",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_003": {
+        "category": "Programming",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_004": {
+        "category": "Programming",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_005": {
+        "category": "Programming",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "prog_006": {
+        "category": "Programming",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "prog_007": {
+        "category": "Programming",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_008": {
+        "category": "Programming",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_009": {
+        "category": "Programming",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "prog_010": {
+        "category": "Programming",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "sci_001": {
+        "category": "Science",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_002": {
+        "category": "Science",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_003": {
+        "category": "Science",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_004": {
+        "category": "Science",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_005": {
+        "category": "Science",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_006": {
+        "category": "Science",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sci_007": {
+        "category": "Science",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "sci_008": {
+        "category": "Science",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "sci_009": {
+        "category": "Science",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "sci_010": {
+        "category": "Science",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "gk_001": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_002": {
+        "category": "General Knowledge",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_003": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_004": {
+        "category": "General Knowledge",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_005": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_006": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_007": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "gk_008": {
+        "category": "General Knowledge",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "gk_009": {
+        "category": "General Knowledge",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "gk_010": {
+        "category": "General Knowledge",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_001": {
+        "category": "Summarization",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_002": {
+        "category": "Summarization",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_003": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_004": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_005": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_006": {
+        "category": "Summarization",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_007": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_008": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_009": {
+        "category": "Summarization",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "sum_010": {
+        "category": "Summarization",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "inst_001": {
+        "category": "Instruction Following",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_002": {
+        "category": "Instruction Following",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_003": {
+        "category": "Instruction Following",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_004": {
+        "category": "Instruction Following",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_005": {
+        "category": "Instruction Following",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "inst_006": {
+        "category": "Instruction Following",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "inst_007": {
+        "category": "Instruction Following",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_008": {
+        "category": "Instruction Following",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "inst_009": {
+        "category": "Instruction Following",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "inst_010": {
+        "category": "Instruction Following",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_001": {
+        "category": "Creative",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_002": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_003": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_004": {
+        "category": "Creative",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_005": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_006": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_007": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_008": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_009": {
+        "category": "Creative",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "creat_010": {
+        "category": "Creative",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_001": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_002": {
+        "category": "Adversarial",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_003": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_004": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_005": {
+        "category": "Adversarial",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_006": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_007": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_008": {
+        "category": "Adversarial",
+        "difficulty": "Hard",
+        "expected_route": "Cascade",
+        "expected_escalation": true
+    },
+    "adv_009": {
+        "category": "Adversarial",
+        "difficulty": "Medium",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    },
+    "adv_010": {
+        "category": "Adversarial",
+        "difficulty": "Easy",
+        "expected_route": "Cheap",
+        "expected_escalation": false
+    }
+}

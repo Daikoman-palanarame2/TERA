@@ -1,0 +1,2242 @@
+[
+    {
+        "task_id": "math_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.045900000259280205,
+            "inference_time_ms": 14810.400300077163,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4805.668900022283,
+                "usage": {
+                    "prompt_tokens": 100,
+                    "total_tokens": 934,
+                    "completion_tokens": 834,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.058999983593821526,
+            "inference_time_ms": 9489.28059998434,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3176.7897000536323,
+                "usage": {
+                    "prompt_tokens": 103,
+                    "total_tokens": 732,
+                    "completion_tokens": 629,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 0
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.050600036047399044,
+            "inference_time_ms": 13576.994900009595,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3483.0704999621958,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 713,
+                    "completion_tokens": 617,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.049200025387108326,
+            "inference_time_ms": 24952.64260005206,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 9623.194899992086,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 1768,
+                    "completion_tokens": 1672,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.08720008190721273,
+            "inference_time_ms": 13387.045199866407,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5412.908400059678,
+                "usage": {
+                    "prompt_tokens": 132,
+                    "total_tokens": 918,
+                    "completion_tokens": 786,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.12500002048909664,
+            "inference_time_ms": 28291.081200004555,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5159.89939996507,
+                "usage": {
+                    "prompt_tokens": 132,
+                    "total_tokens": 1073,
+                    "completion_tokens": 941,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.057699973694980145,
+            "inference_time_ms": 16255.282700061798,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4113.376399967819,
+                "usage": {
+                    "prompt_tokens": 127,
+                    "total_tokens": 1010,
+                    "completion_tokens": 883,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.05789997521787882,
+            "inference_time_ms": 11231.098899967037,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4451.23829995282,
+                "usage": {
+                    "prompt_tokens": 103,
+                    "total_tokens": 1001,
+                    "completion_tokens": 898,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06250001024454832,
+            "inference_time_ms": 11313.636599923484,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3200.537299970165,
+                "usage": {
+                    "prompt_tokens": 90,
+                    "total_tokens": 723,
+                    "completion_tokens": 633,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "math_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.08230004459619522,
+            "inference_time_ms": 15822.015399928205,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5176.373500027694,
+                "usage": {
+                    "prompt_tokens": 113,
+                    "total_tokens": 1230,
+                    "completion_tokens": 1117,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06230000872164965,
+            "inference_time_ms": 24978.32599992398,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3657.0515000494197,
+                "usage": {
+                    "prompt_tokens": 93,
+                    "total_tokens": 640,
+                    "completion_tokens": 547,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.04630000330507755,
+            "inference_time_ms": 11690.49119995907,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3710.549099952914,
+                "usage": {
+                    "prompt_tokens": 92,
+                    "total_tokens": 799,
+                    "completion_tokens": 707,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06839993875473738,
+            "inference_time_ms": 16762.41720013786,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5494.678599992767,
+                "usage": {
+                    "prompt_tokens": 169,
+                    "total_tokens": 1220,
+                    "completion_tokens": 1051,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.08979998528957367,
+            "inference_time_ms": 19602.54980006721,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 7605.661899899133,
+                "usage": {
+                    "prompt_tokens": 94,
+                    "total_tokens": 1353,
+                    "completion_tokens": 1259,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 70
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.09019998833537102,
+            "inference_time_ms": 21703.666700050235,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 8469.715200015344,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 1737,
+                    "completion_tokens": 1641,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 122797.48140007723,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 60606.52409994509,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 5120,
+                    "completion_tokens": 5025,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 94
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.07970002479851246,
+            "inference_time_ms": 26058.9349999791,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 11052.904999931343,
+                "usage": {
+                    "prompt_tokens": 101,
+                    "total_tokens": 3154,
+                    "completion_tokens": 3053,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.13050006236881018,
+            "inference_time_ms": 72287.81239991076,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 16614.08389999997,
+                "usage": {
+                    "prompt_tokens": 94,
+                    "total_tokens": 2300,
+                    "completion_tokens": 2206,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 79593.98540004622,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 17687.692000065,
+                "usage": {
+                    "prompt_tokens": 97,
+                    "total_tokens": 2987,
+                    "completion_tokens": 2890,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "prog_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.15510001685470343,
+            "inference_time_ms": 45474.66529998928,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 18222.083000000566,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 3511,
+                    "completion_tokens": 3416,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.085200066678226,
+            "inference_time_ms": 26924.039299949072,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 10497.852199943736,
+                "usage": {
+                    "prompt_tokens": 91,
+                    "total_tokens": 1207,
+                    "completion_tokens": 1116,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.07479998748749495,
+            "inference_time_ms": 32632.386300014332,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 14769.843099988066,
+                "usage": {
+                    "prompt_tokens": 93,
+                    "total_tokens": 2505,
+                    "completion_tokens": 2412,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 73
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0735999783501029,
+            "inference_time_ms": 25821.379899978638,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 9442.785799968988,
+                "usage": {
+                    "prompt_tokens": 90,
+                    "total_tokens": 1484,
+                    "completion_tokens": 1394,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.11329993139952421,
+            "inference_time_ms": 15309.953500051051,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 6132.890100008808,
+                "usage": {
+                    "prompt_tokens": 91,
+                    "total_tokens": 1236,
+                    "completion_tokens": 1145,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 0
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.1066999975591898,
+            "inference_time_ms": 47538.364699925296,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 16864.76120003499,
+                "usage": {
+                    "prompt_tokens": 97,
+                    "total_tokens": 2781,
+                    "completion_tokens": 2684,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.18590001855045557,
+            "inference_time_ms": 43162.51449997071,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 19015.364299993962,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 3054,
+                    "completion_tokens": 2958,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0926000066101551,
+            "inference_time_ms": 33268.016200046986,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 14934.79520000983,
+                "usage": {
+                    "prompt_tokens": 90,
+                    "total_tokens": 2646,
+                    "completion_tokens": 2556,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 70
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.12809992767870426,
+            "inference_time_ms": 46303.9266000269,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 14701.411999994889,
+                "usage": {
+                    "prompt_tokens": 99,
+                    "total_tokens": 3134,
+                    "completion_tokens": 3035,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 69345.17759992741,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 7198.179199942388,
+                "usage": {
+                    "prompt_tokens": 110,
+                    "total_tokens": 1412,
+                    "completion_tokens": 1302,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 73
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sci_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.09550002869218588,
+            "inference_time_ms": 38216.63539996371,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 7771.040999912657,
+                "usage": {
+                    "prompt_tokens": 106,
+                    "total_tokens": 1508,
+                    "completion_tokens": 1402,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06029999349266291,
+            "inference_time_ms": 16356.271700002253,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 6804.122100002132,
+                "usage": {
+                    "prompt_tokens": 89,
+                    "total_tokens": 1141,
+                    "completion_tokens": 1052,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0771000050008297,
+            "inference_time_ms": 70227.90769999847,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 12209.283599979244,
+                "usage": {
+                    "prompt_tokens": 88,
+                    "total_tokens": 2159,
+                    "completion_tokens": 2071,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.12559990864247084,
+            "inference_time_ms": 36277.120700106025,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 6351.153900031932,
+                "usage": {
+                    "prompt_tokens": 89,
+                    "total_tokens": 1365,
+                    "completion_tokens": 1276,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.10309997014701366,
+            "inference_time_ms": 22666.564400075004,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5365.405300050043,
+                "usage": {
+                    "prompt_tokens": 91,
+                    "total_tokens": 884,
+                    "completion_tokens": 793,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.15300000086426735,
+            "inference_time_ms": 36434.63629996404,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 8105.42160004843,
+                "usage": {
+                    "prompt_tokens": 88,
+                    "total_tokens": 1526,
+                    "completion_tokens": 1438,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.07170008029788733,
+            "inference_time_ms": 21011.607299908064,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 9446.688600000925,
+                "usage": {
+                    "prompt_tokens": 99,
+                    "total_tokens": 1439,
+                    "completion_tokens": 1340,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 72
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.12340000830590725,
+            "inference_time_ms": 39946.74090004992,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 11312.69280007109,
+                "usage": {
+                    "prompt_tokens": 92,
+                    "total_tokens": 2134,
+                    "completion_tokens": 2042,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 78215.03980003763,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 15855.399299995042,
+                "usage": {
+                    "prompt_tokens": 91,
+                    "total_tokens": 2591,
+                    "completion_tokens": 2500,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 70
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 74845.10429995134,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 12502.475599991158,
+                "usage": {
+                    "prompt_tokens": 97,
+                    "total_tokens": 1848,
+                    "completion_tokens": 1751,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "gk_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.07269997149705887,
+            "inference_time_ms": 63422.02449997421,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 17323.772899922915,
+                "usage": {
+                    "prompt_tokens": 92,
+                    "total_tokens": 2757,
+                    "completion_tokens": 2665,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 73
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06990006659179926,
+            "inference_time_ms": 21809.603999950923,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2061.7237999103963,
+                "usage": {
+                    "prompt_tokens": 181,
+                    "total_tokens": 278,
+                    "completion_tokens": 97,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 73
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.025399960577487946,
+            "inference_time_ms": 7409.396199975163,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1752.511499915272,
+                "usage": {
+                    "prompt_tokens": 164,
+                    "total_tokens": 310,
+                    "completion_tokens": 146,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.027400092221796513,
+            "inference_time_ms": 9883.304400020279,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2586.708900053054,
+                "usage": {
+                    "prompt_tokens": 160,
+                    "total_tokens": 326,
+                    "completion_tokens": 166,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.03259989898651838,
+            "inference_time_ms": 6255.681000067852,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1752.7710000285879,
+                "usage": {
+                    "prompt_tokens": 186,
+                    "total_tokens": 333,
+                    "completion_tokens": 147,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.03950006794184446,
+            "inference_time_ms": 9256.945200031623,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2491.9572999933735,
+                "usage": {
+                    "prompt_tokens": 178,
+                    "total_tokens": 361,
+                    "completion_tokens": 183,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.030199997127056122,
+            "inference_time_ms": 7471.451999968849,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2092.980799963698,
+                "usage": {
+                    "prompt_tokens": 150,
+                    "total_tokens": 320,
+                    "completion_tokens": 170,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.027699978090822697,
+            "inference_time_ms": 6138.470500009134,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1904.034800012596,
+                "usage": {
+                    "prompt_tokens": 164,
+                    "total_tokens": 335,
+                    "completion_tokens": 171,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.023999949917197227,
+            "inference_time_ms": 7157.099100062624,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2328.309200005606,
+                "usage": {
+                    "prompt_tokens": 158,
+                    "total_tokens": 420,
+                    "completion_tokens": 262,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.04700000863522291,
+            "inference_time_ms": 9843.025399954058,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3357.311200001277,
+                "usage": {
+                    "prompt_tokens": 156,
+                    "total_tokens": 297,
+                    "completion_tokens": 141,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "sum_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.03629992716014385,
+            "inference_time_ms": 9223.279000027105,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2846.794000011869,
+                "usage": {
+                    "prompt_tokens": 182,
+                    "total_tokens": 554,
+                    "completion_tokens": 372,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 74
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.019400031305849552,
+            "inference_time_ms": 6828.716399963014,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3415.032699937001,
+                "usage": {
+                    "prompt_tokens": 102,
+                    "total_tokens": 212,
+                    "completion_tokens": 110,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.015300000086426735,
+            "inference_time_ms": 5301.761899958365,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3403.9182999404147,
+                "usage": {
+                    "prompt_tokens": 94,
+                    "total_tokens": 185,
+                    "completion_tokens": 91,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.01910002902150154,
+            "inference_time_ms": 5353.070099954493,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3178.980899974704,
+                "usage": {
+                    "prompt_tokens": 99,
+                    "total_tokens": 521,
+                    "completion_tokens": 422,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.05909998435527086,
+            "inference_time_ms": 49295.197600033134,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3498.5532999271527,
+                "usage": {
+                    "prompt_tokens": 98,
+                    "total_tokens": 584,
+                    "completion_tokens": 486,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.10309997014701366,
+            "inference_time_ms": 29190.382900065742,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4478.3142999513075,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 874,
+                    "completion_tokens": 779,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.07890001870691776,
+            "inference_time_ms": 14907.967699924484,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4512.409699964337,
+                "usage": {
+                    "prompt_tokens": 118,
+                    "total_tokens": 751,
+                    "completion_tokens": 633,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.02310005947947502,
+            "inference_time_ms": 10123.141499934718,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2194.1548999166116,
+                "usage": {
+                    "prompt_tokens": 98,
+                    "total_tokens": 244,
+                    "completion_tokens": 146,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.03829994238913059,
+            "inference_time_ms": 15020.290400017984,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2871.884800028056,
+                "usage": {
+                    "prompt_tokens": 94,
+                    "total_tokens": 313,
+                    "completion_tokens": 219,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 84048.56120003387,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 21901.723799994215,
+                "usage": {
+                    "prompt_tokens": 100,
+                    "total_tokens": 1490,
+                    "completion_tokens": 1390,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "inst_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.019200029782950878,
+            "inference_time_ms": 7765.134899993427,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2525.9643000317737,
+                "usage": {
+                    "prompt_tokens": 115,
+                    "total_tokens": 195,
+                    "completion_tokens": 80,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.030700000934302807,
+            "inference_time_ms": 18403.975400025956,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1553.1099000945687,
+                "usage": {
+                    "prompt_tokens": 90,
+                    "total_tokens": 179,
+                    "completion_tokens": 89,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.1463000662624836,
+            "inference_time_ms": 25565.95649989322,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3546.825500088744,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 594,
+                    "completion_tokens": 499,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 72
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 71835.95850004349,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 9341.872500022873,
+                "usage": {
+                    "prompt_tokens": 93,
+                    "total_tokens": 1290,
+                    "completion_tokens": 1197,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 67051.67630012147,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4935.934699955396,
+                "usage": {
+                    "prompt_tokens": 91,
+                    "total_tokens": 422,
+                    "completion_tokens": 331,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.1047999830916524,
+            "inference_time_ms": 45633.67620005738,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 25052.52989998553,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 2848,
+                    "completion_tokens": 2753,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.05710008554160595,
+            "inference_time_ms": 65772.23119989503,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3204.599600052461,
+                "usage": {
+                    "prompt_tokens": 93,
+                    "total_tokens": 555,
+                    "completion_tokens": 462,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 72
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0,
+            "inference_time_ms": 69320.54650003556,
+            "escalation_reason": "cheap_model_failure: ",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 7389.464500010945,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 1360,
+                    "completion_tokens": 1265,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06600003689527512,
+            "inference_time_ms": 16227.825799956918,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5332.324899965897,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 860,
+                    "completion_tokens": 764,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 70
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.06310001481324434,
+            "inference_time_ms": 51972.241599927656,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 5381.932600052096,
+                "usage": {
+                    "prompt_tokens": 95,
+                    "total_tokens": 734,
+                    "completion_tokens": 639,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 72
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "creat_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.03630004357546568,
+            "inference_time_ms": 11076.645399909467,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3035.305800032802,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 498,
+                    "completion_tokens": 402,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_001",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.022499938495457172,
+            "inference_time_ms": 8887.280800030567,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1490.7358000054955,
+                "usage": {
+                    "prompt_tokens": 89,
+                    "total_tokens": 161,
+                    "completion_tokens": 72,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_002",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.13130006846040487,
+            "inference_time_ms": 36076.2421998661,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 11777.000400004908,
+                "usage": {
+                    "prompt_tokens": 103,
+                    "total_tokens": 1927,
+                    "completion_tokens": 1824,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_003",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.027600093744695187,
+            "inference_time_ms": 12681.192999938503,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3190.67260005977,
+                "usage": {
+                    "prompt_tokens": 97,
+                    "total_tokens": 277,
+                    "completion_tokens": 180,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_004",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.0423000892624259,
+            "inference_time_ms": 10137.20369990915,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 1866.4010999491438,
+                "usage": {
+                    "prompt_tokens": 86,
+                    "total_tokens": 201,
+                    "completion_tokens": 115,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 71
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_005",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.029699993319809437,
+            "inference_time_ms": 9119.667499908246,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2017.9489000001922,
+                "usage": {
+                    "prompt_tokens": 92,
+                    "total_tokens": 256,
+                    "completion_tokens": 164,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_006",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.014299992471933365,
+            "inference_time_ms": 5515.22110006772,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 2670.3924000030383,
+                "usage": {
+                    "prompt_tokens": 96,
+                    "total_tokens": 340,
+                    "completion_tokens": 244,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_007",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.026399968191981316,
+            "inference_time_ms": 8306.426499970257,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3539.8353000637144,
+                "usage": {
+                    "prompt_tokens": 124,
+                    "total_tokens": 644,
+                    "completion_tokens": 520,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_008",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.15600002370774746,
+            "inference_time_ms": 29639.835099922493,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 3203.05280003231,
+                "usage": {
+                    "prompt_tokens": 103,
+                    "total_tokens": 717,
+                    "completion_tokens": 614,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 72
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_009",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.042199972085654736,
+            "inference_time_ms": 19189.02530008927,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 8064.703300013207,
+                "usage": {
+                    "prompt_tokens": 107,
+                    "total_tokens": 1618,
+                    "completion_tokens": 1511,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 69
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    },
+    {
+        "task_id": "adv_010",
+        "selected_route": "cheap",
+        "escalated": true,
+        "metadata": {
+            "router_probability": 0.8235294117647058,
+            "cheap_utility": 0.36176470588235293,
+            "dense_utility": -0.04999999999999999,
+            "cascade_utility": 0.35294117647058826,
+            "verification_time_ms": 0.044199987314641476,
+            "inference_time_ms": 16181.808200082742,
+            "escalation_reason": "entropy",
+            "model_metadata": {
+                "model": "accounts/fireworks/models/gpt-oss-120b",
+                "latency_ms": 4142.266200040467,
+                "usage": {
+                    "prompt_tokens": 108,
+                    "total_tokens": 598,
+                    "completion_tokens": 490,
+                    "prompt_tokens_details": {
+                        "cached_tokens": 70
+                    }
+                },
+                "finish_reason": "stop",
+                "provider": "fireworks"
+            }
+        }
+    }
+]

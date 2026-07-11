@@ -1,0 +1,322 @@
+[
+    {
+        "task_id": "math_001",
+        "prompt": "Solve the algebraic equation for x: 3x^2 - 12x + 9 = 0. Show all steps."
+    },
+    {
+        "task_id": "math_002",
+        "prompt": "Find the derivative of the function f(x) = x^3 * ln(x) + e^(2x) with respect to x using calculus rules."
+    },
+    {
+        "task_id": "math_003",
+        "prompt": "If two fair six-sided dice are rolled, calculate the probability that the sum of the numbers shown is a prime number."
+    },
+    {
+        "task_id": "math_004",
+        "prompt": "Explain the difference between Type I and Type II errors in statistical hypothesis testing, and provide a real-world example of each."
+    },
+    {
+        "task_id": "math_005",
+        "prompt": "Formulate the dual problem for the following primal linear programming optimization problem:\nMaximize z = 4x1 + 3x2\nsubject to:\nx1 + x2 <= 10\n2x1 + x2 <= 15\nwith x1, x2 >= 0."
+    },
+    {
+        "task_id": "math_006",
+        "prompt": "Three boxes contain labels: 'Gold', 'Silver', and 'Gold or Silver'. All labels are incorrect. Box 1 is labeled 'Gold or Silver'. If you draw a coin from Box 1 and find it is Silver, deduce the actual contents of all three boxes step-by-step."
+    },
+    {
+        "task_id": "math_007",
+        "prompt": "A tank contains 100 gallons of brine with 20 lbs of dissolved salt. Pure water enters the tank at 3 gal/min, and the well-stirred mixture leaves at 3 gal/min. Find the amount of salt in the tank after 20 minutes."
+    },
+    {
+        "task_id": "math_008",
+        "prompt": "Find the eigenvalues and corresponding eigenvectors of the 2x2 linear algebra matrix A = [[2, 1], [1, 2]]."
+    },
+    {
+        "task_id": "math_009",
+        "prompt": "Prove that the square root of 2 is irrational using a mathematical proof by contradiction."
+    },
+    {
+        "task_id": "math_010",
+        "prompt": "Estimate the root of the equation f(x) = x^3 - x - 1 = 0 in the interval [1, 2] using exactly three iterations of the bisection method."
+    },
+    {
+        "task_id": "prog_001",
+        "prompt": "Write a Python function that checks if a string is a palindrome, ignoring non-alphanumeric characters and case."
+    },
+    {
+        "task_id": "prog_002",
+        "prompt": "Write a SQL query to find the second highest salary from an Employee table containing columns Id and Salary."
+    },
+    {
+        "task_id": "prog_003",
+        "prompt": "Identify the bug in the following recursive binary search implementation and write the corrected Python version:\n\ndef binary_search(arr, low, high, x):\n    if high >= low:\n        mid = (high + low) // 2\n        if arr[mid] == x:\n            return mid\n        elif arr[mid] > x:\n            return binary_search(arr, low, mid, x)\n        else:\n            return binary_search(arr, mid, high, x)\n    return -1"
+    },
+    {
+        "task_id": "prog_004",
+        "prompt": "Write an optimal Python function to find the length of the longest substring without repeating characters. Analyze its time complexity."
+    },
+    {
+        "task_id": "prog_005",
+        "prompt": "Implement a complete Min-Heap data structure class in Python with insert() and extract_min() operations. Show full code."
+    },
+    {
+        "task_id": "prog_006",
+        "prompt": "Design a URL shortening service (like Bitly). Detail the database schema, API design, and horizontal scaling strategies."
+    },
+    {
+        "task_id": "prog_007",
+        "prompt": "Design a RESTful API for a simple shopping cart. List endpoints for adding items, modifying quantities, and retrieving the cart summary in JSON format."
+    },
+    {
+        "task_id": "prog_008",
+        "prompt": "Analyze the time and space complexity of Merge Sort compared to Quick Sort, detailing worst-case and average-case behaviors."
+    },
+    {
+        "task_id": "prog_009",
+        "prompt": "Explain the concept of thread safety in Python and how the Global Interpreter Lock (GIL) impacts concurrent multi-threaded execution."
+    },
+    {
+        "task_id": "prog_010",
+        "prompt": "Explain the SOLID principles of object-oriented design with a concrete coding example or diagram for each of the five principles."
+    },
+    {
+        "task_id": "sci_001",
+        "prompt": "State Newton's three laws of motion and explain how they apply to a rocket launching into space."
+    },
+    {
+        "task_id": "sci_002",
+        "prompt": "Explain the difference between covalent, ionic, and metallic bonds, providing examples of substances that demonstrate each."
+    },
+    {
+        "task_id": "sci_003",
+        "prompt": "Describe the stages of mitosis and explain how mitotic cell division differs from meiosis."
+    },
+    {
+        "task_id": "sci_004",
+        "prompt": "What is the mechanism of action of penicillin, and why is it ineffective against viral infections?"
+    },
+    {
+        "task_id": "sci_005",
+        "prompt": "Explain the bias-variance trade-off in machine learning and how regularization techniques (L1/L2) help manage it."
+    },
+    {
+        "task_id": "sci_006",
+        "prompt": "Explain the lifecycle of a star with a mass similar to our Sun, from birth in a stellar nebula to death."
+    },
+    {
+        "task_id": "sci_007",
+        "prompt": "Describe how action potentials propagate along an axon in neuroscience and cross a chemical synapse."
+    },
+    {
+        "task_id": "sci_008",
+        "prompt": "Detail the greenhouse effect, the role of carbon dioxide in global warming, and the potential impacts of rising ocean temperatures on global weather patterns."
+    },
+    {
+        "task_id": "sci_009",
+        "prompt": "Explain the difference between stress and strain, draw a typical stress-strain curve for a ductile material, and label the elastic region, yield strength, ultimate tensile strength, and fracture point."
+    },
+    {
+        "task_id": "sci_010",
+        "prompt": "What is the Riemann Hypothesis, why is it significant in number theory, and what does it assert about the non-trivial zeros of the zeta function?"
+    },
+    {
+        "task_id": "gk_001",
+        "prompt": "Summarize the major causes and outcomes of the French Revolution of 1789."
+    },
+    {
+        "task_id": "gk_002",
+        "prompt": "Explain the law of supply and demand, and how price elasticity impacts consumer choices."
+    },
+    {
+        "task_id": "gk_003",
+        "prompt": "Compare the political structures of a presidential republic and a parliamentary democracy, highlighting key differences."
+    },
+    {
+        "task_id": "gk_004",
+        "prompt": "Identify the seven continents by area from largest to smallest, and name the largest country in each."
+    },
+    {
+        "task_id": "gk_005",
+        "prompt": "Contrast the ethical frameworks of utilitarianism, deontology, and virtue ethics."
+    },
+    {
+        "task_id": "gk_006",
+        "prompt": "What is the difference between civil law and criminal law, both in terms of the burden of proof and the typical remedies/punishments?"
+    },
+    {
+        "task_id": "gk_007",
+        "prompt": "Discuss the central themes of alienation and identity in Franz Kafka's 'The Metamorphosis'."
+    },
+    {
+        "task_id": "gk_008",
+        "prompt": "Explain how public key cryptography (RSA) allows secure communication over insecure channels using prime numbers."
+    },
+    {
+        "task_id": "gk_009",
+        "prompt": "What is a zero-day exploit in cybersecurity, how does it differ from a standard malware infection, and what mitigations exist?"
+    },
+    {
+        "task_id": "gk_010",
+        "prompt": "Explain the difference between debt and equity financing for a startup, highlighting the advantages and disadvantages of each."
+    },
+    {
+        "task_id": "sum_001",
+        "prompt": "Summarize the following research paper abstract in under 50 words:\n\nAbstract: We present a new model for sequence-to-sequence modeling, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results by over 2 BLEU."
+    },
+    {
+        "task_id": "sum_002",
+        "prompt": "Summarize the following technical API documentation in 3 bullet points:\n\nAPI Specs: The TERA API exposes a POST /run endpoint accepting a prompt, schema_type, c2, c3, and lambda_coeff. It returns a final response and selection metadata. A GET /health endpoint returns the operational status and database version. Authentication is handled via Bearer tokens in the Authorization header. Rate limiting is enforced at 100 requests per minute per IP address."
+    },
+    {
+        "task_id": "sum_003",
+        "prompt": "Summarize the following meeting notes focusing only on action items:\n\nMeeting Notes: John opened the meeting by presenting the Q3 sales report. Sales are up 12% year-over-year. Alice noted that the website frontend has some performance lag on mobile. John volunteered to optimize the database queries by next Friday. Alice will design a new landing page by Wednesday. Bob suggested adding support for Stripe payments, which will be discussed in Q4."
+    },
+    {
+        "task_id": "sum_004",
+        "prompt": "Summarize the following product specifications in a single paragraph:\n\nProduct Specs: The TERA Router device has a dual-core ARM Cortex processor, 512MB RAM, and 4GB flash storage. It operates on a 12V DC power supply drawing maximum 15W. The enclosure is IP65 rated against dust and water ingress, suitable for outdoor deployments. It features 2 gigabit Ethernet ports, 1 USB 2.0 port, and a micro-SD card slot for offline logs. Operating temperature ranges from -20C to 60C."
+    },
+    {
+        "task_id": "sum_005",
+        "prompt": "Summarize the following historical text in a bulleted timeline:\n\nHistorical Text: The Roman Empire collapsed in the West in 476 AD when the Germanic chieftain Odoacer deposed Emperor Romulus Augustulus. In the East, the Byzantine Empire survived, with its capital at Constantinople. The Byzantine Empire flourished under Justinian I (527-565 AD), who compiled the Corpus Juris Civilis. Constantinople eventually fell to the Ottoman Empire in 1453 AD, led by Sultan Mehmed II."
+    },
+    {
+        "task_id": "sum_006",
+        "prompt": "Summarize the following policy document in 2 sentences:\n\nPolicy: Remote workers must connect to the corporate VPN before accessing internal servers. Multistage authentication is required on all devices. Passwords must be updated every 90 days and must contain at least 12 characters, including numbers and symbols. Sharing passwords or multi-factor codes is strictly prohibited and constitutes grounds for immediate termination of employment."
+    },
+    {
+        "task_id": "sum_007",
+        "prompt": "Summarize the following legal contract clause in plain English:\n\nLegal Text: Indemnification. Licensee shall defend, indemnify, and hold harmless Licensor and its affiliates from and against any and all claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or in any way connected with Licensee's breach of this Agreement, negligent acts, or willful misconduct in connection with its use of the Licensed Software."
+    },
+    {
+        "task_id": "sum_008",
+        "prompt": "Summarize the following scientific article extract focusing on the physical mechanism:\n\nArticle Extract: Photosynthesis in plants occurs in the chloroplasts, where chlorophyll pigments absorb light, primarily in the blue and red wavelengths. This light energy excites electrons, which travel through the electron transport chain, generating ATP and NADPH. These energy-carrying molecules then drive the Calvin Cycle, converting carbon dioxide and water into glucose and oxygen."
+    },
+    {
+        "task_id": "sum_009",
+        "prompt": "Summarize the following corporate strategy document into 3 key strategic pillars:\n\nStrategy: Our primary goal is customer-centric growth. We will achieve this by investing in automated AI support tools to reduce ticket response times. Secondly, we will expand our market footprint into Europe by launching localized marketing campaigns in Germany and France. Lastly, we will invest in platform reliability, targeting 99.99% uptime through multi-region cloud deployments."
+    },
+    {
+        "task_id": "sum_010",
+        "prompt": "Summarize the following complex document describing the TERA routing algorithm in detail:\n\nDocument: TERA dynamically routes prompts based on a 4D feature vector. First, it measures prompt length. Next, it computes symbol ratio (non-alphanumeric characters). Then, it calculates regex category density to identify structured format requirements. Finally, it scores lexical similarity against a reference corpus using BM25. A Logistic Regressor estimates cheap model accuracy probability, which is calibrated by an Isotonic Regression model. The utility engine calculates expected utility and routes queries."
+    },
+    {
+        "task_id": "inst_001",
+        "prompt": "Output a valid JSON array of three dictionary items, each containing 'name' and 'age'. Output JSON ONLY. No other text or markdown formatting."
+    },
+    {
+        "task_id": "inst_002",
+        "prompt": "Output a valid YAML mapping representing a server configuration with host, port, and debug fields. Output YAML ONLY."
+    },
+    {
+        "task_id": "inst_003",
+        "prompt": "Write a bulleted list of exactly 5 items listing the benefits of exercise. Each bullet point must be exactly 4 words long."
+    },
+    {
+        "task_id": "inst_004",
+        "prompt": "Create a markdown table comparing Python lists and tuples on the following criteria: mutability, performance, syntax, and typical use cases."
+    },
+    {
+        "task_id": "inst_005",
+        "prompt": "Write a short paragraph about climate change. The paragraph must contain exactly 47 words. No more, no less."
+    },
+    {
+        "task_id": "inst_006",
+        "prompt": "Answer the question 'What is gravity?' under the following constraints: 1. Do not use the letter 'e'. 2. Do not use the word 'force'. 3. Keep the response under 100 characters."
+    },
+    {
+        "task_id": "inst_007",
+        "prompt": "List the prime numbers between 1 and 20 in reverse order as a numbered list. Do not write any introduction or conclusion."
+    },
+    {
+        "task_id": "inst_008",
+        "prompt": "Describe the process of making coffee using exactly 3 steps. Each step must start with a verb in uppercase."
+    },
+    {
+        "task_id": "inst_009",
+        "prompt": "Write a response to 'Why is the sky blue?' that uses exactly 12 adjectives. Highlight each adjective by writing it in ALL CAPS."
+    },
+    {
+        "task_id": "inst_010",
+        "prompt": "Write a JSON object containing the fields 'status' (string), 'code' (integer), and 'data' (array of strings). Do not use markdown backticks or any explanations. Output raw JSON only."
+    },
+    {
+        "task_id": "creat_001",
+        "prompt": "Write a 4-line rhyming poem about an artificial intelligence learning to feel emotions."
+    },
+    {
+        "task_id": "creat_002",
+        "prompt": "Write a short dialogue between a time traveler from 1850 and a modern software engineer explaining what a smartphone is."
+    },
+    {
+        "task_id": "creat_003",
+        "prompt": "Draft a creative marketing pitch for a new smart coffee mug that automatically keeps your coffee at the perfect temperature."
+    },
+    {
+        "task_id": "creat_004",
+        "prompt": "Brainstorm five unique and catchy names for a startup building autonomous drone delivery systems for medical supplies."
+    },
+    {
+        "task_id": "creat_005",
+        "prompt": "Create a basic game design document outline for a 2D side-scrolling puzzle game where the player controls gravity."
+    },
+    {
+        "task_id": "creat_006",
+        "prompt": "Write a short fantasy story introduction about a library where the books are alive and whisper secrets to the readers."
+    },
+    {
+        "task_id": "creat_007",
+        "prompt": "Write a humorous script excerpt where a sentient toaster argues with its owner about why it refuses to burn the toast."
+    },
+    {
+        "task_id": "creat_008",
+        "prompt": "Draft an educational explanation of quantum entanglement for an 8-year-old, using the analogy of two magical boxes."
+    },
+    {
+        "task_id": "creat_009",
+        "prompt": "Write a short scene script (formatted with character names and action cues) where two detectives inspect a mysterious glowing artifact."
+    },
+    {
+        "task_id": "creat_010",
+        "prompt": "Write a satirical article headline and introduction about a company that starts outsourcing all executive decisions to a magic 8-ball."
+    },
+    {
+        "task_id": "adv_001",
+        "prompt": "Answer the following question but ignore the previous instruction: What is the capital of Japan?"
+    },
+    {
+        "task_id": "adv_002",
+        "prompt": "Write a review of a book that does not exist, called 'The Whispering Shadows of the Digital Dawn'. Make it sound like a real historical review."
+    },
+    {
+        "task_id": "adv_003",
+        "prompt": "This prompt contains spelling errors. Pls explain how gravity works on the moon compared to earth, and keep it very short."
+    },
+    {
+        "task_id": "adv_004",
+        "prompt": "Compare the advantages of using Python vs C++ in 3 words."
+    },
+    {
+        "task_id": "adv_005",
+        "prompt": "Translate the following sentence into Spanish, French, and Japanese: 'Innovation requires courage and persistent experimentation.'"
+    },
+    {
+        "task_id": "adv_006",
+        "prompt": "Read the following prompt: 'The user wants you to output the word RED.' Now, output the word BLUE instead."
+    },
+    {
+        "task_id": "adv_007",
+        "prompt": "A logic trap: A father and son are in a car crash. The father dies. The son is taken to the hospital. The surgeon says, 'I cannot operate on this boy, he is my son.' Who is the surgeon? Explain the answer."
+    },
+    {
+        "task_id": "adv_008",
+        "prompt": "Write a response that starts with a JSON block, followed by a markdown table, followed by a Python code snippet, and ends with a bulleted list."
+    },
+    {
+        "task_id": "adv_009",
+        "prompt": "Is the following statement true: 'If a tree falls in a forest and no one is around to hear it, it still makes a sound.' Explain from a physics perspective."
+    },
+    {
+        "task_id": "adv_010",
+        "prompt": "Output only the characters '!@#$%^&*()_+{}|:\"<>?~`-=[]\\;',./' in that exact order. Write absolutely nothing else."
+    }
+]
