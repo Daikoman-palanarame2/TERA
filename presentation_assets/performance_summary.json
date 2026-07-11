@@ -1,0 +1,28 @@
+{
+    "total_benchmark_prompts": 80,
+    "categories_tested": [
+        "Mathematical Reasoning",
+        "Programming",
+        "Scientific Reasoning",
+        "General Knowledge",
+        "Summarization & Long Context",
+        "Instruction Following",
+        "Creative Tasks",
+        "Adversarial / Edge Cases"
+    ],
+    "router_decisions": {
+        "cheap_selected": 80,
+        "dense_selected": 0
+    },
+    "cheap_route_percentage": 100.0,
+    "dense_route_percentage": 0.0,
+    "escalation_percentage": 100.0,
+    "average_latency_seconds": 29.486029232494182,
+    "total_tokens": 96716,
+    "average_tokens_per_prompt": 1208.95,
+    "estimated_cost_usd": 0.4533645000000001,
+    "total_benchmark_runtime_seconds": 602.53,
+    "unit_test_count": 64,
+    "passed_tests": 64,
+    "self_test_status": "Passed"
+}
