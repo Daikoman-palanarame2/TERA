@@ -101,7 +101,35 @@ async def inspect_route(request: InspectorRequest):
         reasoning_count = sum(1 for _ in re.finditer(r"\b(because|therefore|since|logical|conclude|consequence|reason|why|how)\b", request.prompt, re.IGNORECASE))
         numeric_density = sum(1 for c in request.prompt if c.isdigit()) / max(1, len(request.prompt))
 
-        # 6. Build structured inspector payload
+        # 6. Calculate costs and savings
+        model_meta = response.metadata.get("model_metadata", {}) if response.metadata else {}
+        usage = model_meta.get("usage", {})
+        prompt_tokens = usage.get("prompt_tokens", 0)
+        completion_tokens = usage.get("completion_tokens", 0)
+        total_tokens = prompt_tokens + completion_tokens
+        model_name = model_meta.get("model", "Unknown Model").split('/')[-1]
+
+        dense_baseline_cost = (prompt_tokens * 1.5) / 1e6 + (completion_tokens * 5.0) / 1e6
+
+        if response.escalated:
+            cheap_cost = (prompt_tokens * 0.15) / 1e6 + (20 * 0.60) / 1e6
+            dense_cost = (prompt_tokens * 1.5) / 1e6 + (completion_tokens * 5.0) / 1e6
+            actual_cost = cheap_cost + dense_cost
+            token_savings = 0
+            cost_savings_usd = 0.0
+            cost_savings_percentage = 0.0
+        elif decision.selected_route.value == "cheap":
+            actual_cost = (prompt_tokens * 0.15) / 1e6 + (completion_tokens * 0.60) / 1e6
+            token_savings = total_tokens
+            cost_savings_usd = max(0.0, dense_baseline_cost - actual_cost)
+            cost_savings_percentage = (cost_savings_usd / dense_baseline_cost * 100.0) if dense_baseline_cost > 0 else 0.0
+        else:
+            actual_cost = dense_baseline_cost
+            token_savings = 0
+            cost_savings_usd = 0.0
+            cost_savings_percentage = 0.0
+
+        # 7. Build structured inspector payload
         return {
             "prompt": request.prompt,
             "features": {
@@ -130,6 +158,20 @@ async def inspect_route(request: InspectorRequest):
                 "entropy": float(response.verification_result.output_entropy) if (response.verification_result and response.verification_result.output_entropy is not None) else None,
                 "escalated": response.escalated,
                 "reason": response.metadata.get("escalation_reason") if response.metadata else None
+            },
+            "telemetry": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
+                "model_name": model_name,
+                "latency_ms": (response.metadata.get("inference_time_ms", 0.0) + response.metadata.get("verification_time_ms", 0.0)) if response.metadata else 0.0
+            },
+            "savings": {
+                "dense_baseline_cost": float(dense_baseline_cost),
+                "actual_cost": float(actual_cost),
+                "cost_savings_usd": float(cost_savings_usd),
+                "cost_savings_percentage": float(cost_savings_percentage),
+                "token_savings": int(token_savings)
             },
             "answer": response.final_response,
             "metadata": response.metadata

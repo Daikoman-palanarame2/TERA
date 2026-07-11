@@ -7,6 +7,7 @@ import FeatureCard from '../components/FeatureCard';
 import RouterDecisionCard from '../components/RouterDecisionCard';
 import VerificationCard from '../components/VerificationCard';
 import TelemetryCard from '../components/TelemetryCard';
+import SavingsCard from '../components/SavingsCard';
 import AnswerCard from '../components/AnswerCard';
 import { Sparkles, Terminal, Activity, HelpCircle } from 'lucide-react';
 
@@ -17,15 +18,21 @@ export default function Home() {
   const [isMock, setIsMock] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Resolve API Base with precedence: NEXT_PUBLIC_API_URL -> Relative -> localhost:8000
+  const getApiBase = () => {
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+    if (typeof window !== 'undefined') return ''; // Empty string enables relative fetch requests matching host origin
+    return 'http://localhost:8000';
+  };
+
   // Check backend health on start to determine connection state
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiBase = getApiBase();
         const res = await fetch(`${apiBase}/api/health`, { method: 'GET' });
         if (res.ok) {
-          // If Fireworks key is in environment, backend will run in live mode
-          // We check the telemetry model on actual runs, default connection is active
+          // Connection active
         }
       } catch (err) {
         console.warn('Backend server not reachable at default port 8000.');
@@ -38,7 +45,7 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiBase = getApiBase();
       const res = await fetch(`${apiBase}/api/router-inspector`, {
         method: 'POST',
         headers: {
@@ -107,11 +114,14 @@ export default function Home() {
                 />
               </div>
 
-              <VerificationCard 
-                verification={result.verification} 
-                metadata={result.metadata}
-                devMode={devMode} 
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <VerificationCard 
+                  verification={result.verification} 
+                  metadata={result.metadata}
+                  devMode={devMode} 
+                />
+                <SavingsCard savings={result.savings} />
+              </div>
 
               <TelemetryCard metadata={result.metadata} />
               

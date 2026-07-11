@@ -10,11 +10,19 @@ router_service = RouterService()
 @router.get("/health")
 async def health_check():
     """
-    Returns the health status and current version of the TERA service.
+    Returns the health status of the TERA service.
     """
     return {
-        "status": "healthy",
-        "version": "1.0.0"
+        "status": "ok"
+    }
+
+@router.get("/ready")
+async def ready_check():
+    """
+    Returns the readiness status of the TERA service.
+    """
+    return {
+        "status": "ok"
     }
 
 @router.post("/route", response_model=RouteResponse)

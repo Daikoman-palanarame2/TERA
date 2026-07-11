@@ -5,6 +5,12 @@ echo "===================================="
 echo "TERA Track 1 Production Startup"
 echo "===================================="
 
+# Check for web launcher mode (no arguments, or first argument is "web")
+if [ $# -eq 0 ] || [ "$1" = "web" ]; then
+  echo "Launching TERA Web Server on port 7860..."
+  exec uvicorn app.main:app --host 0.0.0.0 --port 7860
+fi
+
 # Check if self-test mode is requested
 SELF_TEST=false
 for arg in "$@"; do
