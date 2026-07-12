@@ -1,25 +1,22 @@
-from app.verification.verification_types import (
-    VerificationStatus, 
-    FailureReason, 
-    SchemaType, 
-    VerificationResult
-)
-from app.verification.validators import (
-    validate_schema, 
-    validate_length, 
-    validate_stop_tokens
-)
-from app.verification.entropy import compute_entropy
+"""
+Module: backend/app/verification
+Purpose:
+    Exposes ROVL, validators, and entropy methods.
+"""
+
 from app.verification.rovl import ROVL
+from app.verification.validators import (
+    validate_json_schema,
+    validate_regex,
+    validate_stop_sequences,
+)
+from app.verification.entropy import compute_sequence_entropy, compute_average_surprisal
 
 __all__ = [
-    "VerificationStatus",
-    "FailureReason",
-    "SchemaType",
-    "VerificationResult",
-    "validate_schema",
-    "validate_length",
-    "validate_stop_tokens",
-    "compute_entropy",
-    "ROVL"
+    "ROVL",
+    "validate_json_schema",
+    "validate_regex",
+    "validate_stop_sequences",
+    "compute_sequence_entropy",
+    "compute_average_surprisal",
 ]

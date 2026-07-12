@@ -1,40 +1,84 @@
+"""
+Module: backend/app/verification/entropy
+Purpose:
+    Calculate average token surprisal and sequence entropy from token probabilities.
+"""
+
 import math
-from typing import List, Optional
+from typing import List
+from app.schemas.data_contracts import TokenLogprob
 
-"""
-This module implements validation entropy calculations using the generated token probabilities.
-"""
 
-def compute_entropy(probs: Optional[List[float]]) -> Optional[float]:
+def compute_sequence_entropy(tokens: List[TokenLogprob]) -> float:
+    """Calculate the average Shannon entropy across a sequence of token logprobs.
+
+    Args:
+        tokens: List of TokenLogprob instances from model metadata.
+
+    Returns:
+        The calculated mean sequence entropy score.
     """
-    Purpose:
-        Computes the natural log sequence entropy across a list of token probabilities:
-        H = -sum(p_t * ln(p_t))
-        
-    Inputs:
-        probs: List of floating-point probabilities in range [0, 1].
-        
-    Outputs:
-        A float representing the sequence entropy. Returns None if probabilities 
-        are empty, None, or invalid.
-        
-    Time Complexity:
-        O(T) where T is the number of tokens (length of probs).
-        
-    Memory Complexity:
-        O(1) auxiliary memory.
-    """
-    if probs is None or len(probs) == 0:
-        return None
-        
-    entropy = 0.0
-    for p in probs:
-        # Ignore non-positive probabilities and clamp upper bound to 1.0
-        if p <= 0.0:
+    if not tokens:
+        return 0.0
+
+    total_entropy = 0.0
+    valid_count = 0
+
+    for t in tokens:
+        if t.logprob is None or math.isnan(t.logprob) or math.isinf(t.logprob):
             continue
-        elif p > 1.0:
-            p = 1.0
-            
-        entropy -= p * math.log(p)
-        
-    return float(entropy)
+
+        lp = t.logprob
+        if lp > 0.0:
+            lp = 0.0  # Clamp logprob to 0.0 (prob = 1.0)
+
+        p = math.exp(lp)
+        if p <= 0.0:
+            contrib = 0.0
+        else:
+            contrib = -p * lp
+
+        total_entropy += contrib
+        valid_count += 1
+
+    if valid_count == 0:
+        return 0.0
+
+    return total_entropy / valid_count
+
+
+def compute_average_surprisal(tokens: List[TokenLogprob]) -> float:
+    """Calculate the mean surprisal score (-logprob) across generated tokens.
+
+    Args:
+        tokens: List of TokenLogprob instances.
+
+    Returns:
+        The calculated average surprisal score.
+    """
+    if not tokens:
+        return 0.0
+
+    total_surprisal = 0.0
+    valid_count = 0
+
+    for t in tokens:
+        if t.logprob is None or math.isnan(t.logprob):
+            continue
+
+        lp = t.logprob
+        if math.isinf(lp) and lp < 0:
+            # Handle negative infinity (0 probability) stably
+            surprisal_contrib = 100.0
+        elif lp > 0.0:
+            surprisal_contrib = 0.0  # Clamp positive logprob to 0.0 surprisal
+        else:
+            surprisal_contrib = -lp
+
+        total_surprisal += surprisal_contrib
+        valid_count += 1
+
+    if valid_count == 0:
+        return 0.0
+
+    return total_surprisal / valid_count

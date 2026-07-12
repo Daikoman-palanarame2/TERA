@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from app.inference.model_interface import ModelInterface
 from app.inference.inference_types import ModelOutput
+from app.schemas.data_contracts import RawModelOutput
 
 class DenseModel(ModelInterface):
     """
@@ -48,9 +49,19 @@ class DenseModel(ModelInterface):
             metadata={"model": "dense_mock_default"}
         )
 
-    async def generate_async(self, prompt: str) -> ModelOutput:
+    async def generate_async(self, prompt: str, params: Optional[Dict[str, Any]] = None) -> RawModelOutput:
         """
         Purpose:
             Asynchronous wrapper around synchronous mock completion generation.
         """
-        return self.generate(prompt)
+        import math
+        from app.schemas.data_contracts import RawModelOutput, TokenLogprob
+        res = self.generate(prompt)
+        probs = res.token_probs if res.token_probs is not None else [0.99]
+        tokens = [TokenLogprob(token="tok", logprob=math.log(max(p, 1e-9))) for p in probs]
+        return RawModelOutput(
+            text=res.text,
+            tokens=tokens,
+            latency_ms=20.0,
+            usage_tokens=max(1, len(res.text) // 4)
+        )

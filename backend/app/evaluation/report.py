@@ -79,9 +79,9 @@ def generate_markdown_report(tera_metrics: Dict[str, Any], baselines: Dict[str, 
     confusion = tera_metrics.get("false_decisions", {})
     md.append("### Routing Confusion Metrics")
     md.append(f"- **False Cheap Decisions:** {confusion.get('false_cheap', 0)}")
-    md.append(f"  *(Router selected CHEAP/CASCADE but the cheap model output failed ROVL verification)*")
+    md.append("  *(Router selected CHEAP/CASCADE but the cheap model output failed ROVL verification)*")
     md.append(f"- **False Dense Decisions:** {confusion.get('false_dense', 0)}")
-    md.append(f"  *(Router selected DENSE directly but the cheap model would have passed verification)*\n")
+    md.append("  *(Router selected DENSE directly but the cheap model would have passed verification)*\n")
     
     md.append("### Efficiency & Calibration")
     md.append(f"- **Average Routing + Model Latency:** {tera_metrics.get('average_latency_ms', 0.0):.2f} ms")

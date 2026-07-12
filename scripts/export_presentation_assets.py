@@ -22,8 +22,23 @@ def generate_assets():
         
     with open(results_path, "r", encoding="utf-8") as f:
         results = json.load(f)
-    with open(telemetry_path, "r", encoding="utf-8") as f:
-        telemetry = json.load(f)
+    try:
+        with open(telemetry_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if content.startswith("[") and content.endswith("]"):
+                telemetry = json.loads(content)
+            else:
+                f.seek(0)
+                telemetry = []
+                for line in f:
+                    if line.strip():
+                        telemetry.append(json.loads(line))
+    except Exception as e:
+        telemetry = []
+        with open(telemetry_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    telemetry.append(json.loads(line))
         
     total_prompts = len(results)
     

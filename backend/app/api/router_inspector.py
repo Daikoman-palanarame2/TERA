@@ -1,24 +1,26 @@
 import os
 import re
-import time
-import pickle
-import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 
-from app.core.settings import settings
-from app.router.runtime_router import RuntimeRouter
-from app.router.regex_patterns import DEFAULT_PATTERNS
-from app.verification.verification_types import SchemaType
+from app.core.config import settings
 from app.verification.rovl import ROVL
-from app.inference.inference_types import InferenceRequest, InferenceResponse
-from app.inference.orchestrator import InferenceOrchestrator
+from app.schemas.data_contracts import InferenceRequest
+from app.core.orchestrator import TERAOrchestrator
 from app.inference.cheap_model import CheapModel
 from app.inference.dense_model import DenseModel
-from app.inference.fireworks_model import FireworksModel
+from app.inference.remote_client import RemoteModelClient as FireworksModel
+from app.cache.semantic_cache import SemanticCache
+from app.solvers.solver_registry import SolverRegistry
+from app.solvers.plugins.arithmetic_solver import ArithmeticSolver
+from app.solvers.plugins.logic_solver import LogicSolver
+from app.solvers.plugins.text_counter_solver import TextCounterSolver
+from app.parser.intent_parser import IntentParser
+from app.router.regex_patterns import DEFAULT_PATTERNS
 
 router = APIRouter()
+
 
 # Request model
 class InspectorRequest(BaseModel):
@@ -32,93 +34,149 @@ class InspectorRequest(BaseModel):
     min_chars: Optional[int] = None
     max_chars: Optional[int] = None
 
+
 @router.post("/router-inspector")
-async def inspect_route(request: InspectorRequest):
-    """
-    Executes TERA inference pipeline for a developer diagnostics prompt
-    and returns feature, router, validation, and final output data.
-    """
+async def inspect_route(request: InspectorRequest, fastapi_req: Request) -> Dict[str, Any]:
+    """Executes TERA V2 inference pipeline for diagnostics prompt and returns telemetry metrics."""
     if not request.prompt or not request.prompt.strip():
         raise HTTPException(status_code=400, detail="Prompt must not be empty.")
 
     try:
-        # 1. Initialize TERA runtime modules
-        models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models"))
-        router_instance = RuntimeRouter(models_dir)
-        
-        # Determine adapter modes (mock fallback if no Fireworks API key is set)
-        if settings.fireworks_api_key:
-            cheap_model = FireworksModel(model_name=settings.cheap_model)
-            dense_model = FireworksModel(model_name=settings.dense_model)
-        else:
-            cheap_model = CheapModel()
-            dense_model = DenseModel()
+        try:
+            orchestrator = fastapi_req.app.state.orchestrator
+        except AttributeError:
+            # Fallback transient initialization for offline environments
+            cache = SemanticCache(
+                cache_dir=settings.tera_cache_dir,
+                embedding_model_path=settings.tera_onnx_model_path
+            )
+            registry = SolverRegistry()
+            registry.register_solver(ArithmeticSolver())
+            registry.register_solver(LogicSolver())
+            registry.register_solver(TextCounterSolver())
+            registry.lock()
+            parser = IntentParser(registry)
             
-        rovl = ROVL(entropy_threshold=settings.entropy_threshold)
-        orchestrator = InferenceOrchestrator(router_instance, cheap_model, dense_model, rovl)
+            if settings.tera_fireworks_api_key:
+                cheap_model = FireworksModel(
+                    api_key=settings.tera_fireworks_api_key,
+                    endpoint_url=settings.tera_fireworks_api_url,
+                    model_name=settings.tera_local_model_name
+                )
+                dense_model = FireworksModel(
+                    api_key=settings.tera_fireworks_api_key,
+                    endpoint_url=settings.tera_fireworks_api_url,
+                    model_name=settings.tera_remote_model_name
+                )
+            else:
+                cheap_model = CheapModel()  # type: ignore
+                dense_model = DenseModel()  # type: ignore
+                
+            rovl = ROVL(entropy_threshold=settings.entropy_threshold)
+            orchestrator = TERAOrchestrator(
+                cache=cache,
+                parser=parser,
+                registry=registry,
+                local_client=cheap_model,
+                remote_client=dense_model,
+                rovl=rovl,
+                settings=settings
+            )
 
-        # 2. Parse SchemaType String
-        schema_map = {
-            "none": SchemaType.NONE,
-            "json": SchemaType.JSON,
-            "regex": SchemaType.REGEX
-        }
-        schema_enum = schema_map.get(request.schema_type.lower(), SchemaType.NONE)
+        # 2. Parse request payload
+        schema_type = str(request.schema_type or "none").lower()
+        c2 = float(request.c2 if request.c2 is not None else 10.0)
+        c3 = float(request.c3 if request.c3 is not None else 100.0)
+        lambda_coeff = float(request.lambda_coeff if request.lambda_coeff is not None else 0.5)
+        alpha_dense = float(request.alpha_dense if request.alpha_dense is not None else 0.9)
 
         # 3. Create InferenceRequest
         inf_req = InferenceRequest(
             prompt=request.prompt,
-            c2=request.c2,
-            c3=request.c3,
-            lambda_coeff=request.lambda_coeff,
-            alpha_dense=request.alpha_dense,
-            schema_type=schema_enum,
-            regex_pattern=request.regex_pattern,
-            min_chars=request.min_chars,
-            max_chars=request.max_chars
+            task_id="task_0_diagnostic",
+            c2=c2,
+            c3=c3,
+            lambda_coeff=lambda_coeff,
+            alpha_dense=alpha_dense,
+            schema_type=schema_type,
+            regex_pattern=request.regex_pattern
         )
 
         # 4. Execute Orchestrator Inference
-        response = await orchestrator.run_async(inf_req)
+        response = await orchestrator.process_request_async(inf_req)
         
-        # 5. Extract Feature Vector and compute auxiliary features
-        decision = response.routing_decision
-        features = decision.feature_vector
-        
-        features_arr = np.array([[
-            features.length, 
-            features.symbol_ratio, 
-            features.regex_density, 
-            features.bm25_score
-        ]])
-        
-        # Load raw probability from pickle object
-        raw_prob = float(router_instance.probability_estimator.logistic_model.predict_proba(features_arr)[0, 1])
+        # 5. Extract Feature Vector (V1 compatibility fallback)
+        try:
+            from app.router.feature_extractor import FeatureExtractor
+            models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models"))
+            fe = FeatureExtractor(models_dir)
+            features = fe.extract(request.prompt)
+            code_matched = bool(DEFAULT_PATTERNS["code"].search(request.prompt))
+            math_matched = bool(DEFAULT_PATTERNS["calculate"].search(request.prompt))
+            reasoning_count = sum(1 for _ in re.finditer(r"\b(because|therefore|since|logical|conclude|consequence|reason|why|how)\b", request.prompt, re.IGNORECASE))
+            numeric_density = sum(1 for c in request.prompt if c.isdigit()) / max(1, len(request.prompt))
+            
+            raw_features = {
+                "length": features.length,
+                "symbol_ratio": float(features.symbol_ratio),
+                "regex_density": int(features.regex_density),
+                "bm25_score": float(features.bm25_score),
+                "code_detected": code_matched,
+                "math_detected": math_matched,
+                "reasoning_count": reasoning_count,
+                "numeric_density": float(numeric_density)
+            }
+        except Exception:
+            raw_features = {
+                "length": len(request.prompt),
+                "symbol_ratio": 0.0,
+                "regex_density": 0,
+                "bm25_score": 0.0,
+                "code_detected": False,
+                "math_detected": False,
+                "reasoning_count": 0,
+                "numeric_density": 0.0
+            }
 
-        # Auxiliary keyword counts
-        code_matched = bool(DEFAULT_PATTERNS["code"].search(request.prompt))
-        math_matched = bool(DEFAULT_PATTERNS["calculate"].search(request.prompt))
-        reasoning_count = sum(1 for _ in re.finditer(r"\b(because|therefore|since|logical|conclude|consequence|reason|why|how)\b", request.prompt, re.IGNORECASE))
-        numeric_density = sum(1 for c in request.prompt if c.isdigit()) / max(1, len(request.prompt))
+        # 6. Build route and utility fallback structures
+        router_route = "cheap" if response.route_taken in {"cache", "solver", "local_llm"} else "dense"
+        
+        router_data = {
+            "raw_probability": 0.0 if router_route == "cheap" else 1.0,
+            "calibrated_probability": 1.0,
+            "selected_route": router_route
+        }
+        
+        utilities_data = {
+            "cheap": 1.0 if router_route == "cheap" else 0.0,
+            "dense": 1.0 if router_route == "dense" else 0.0,
+            "cascade": 0.0
+        }
 
-        # 6. Calculate costs and savings
-        model_meta = response.metadata.get("model_metadata", {}) if response.metadata else {}
-        usage = model_meta.get("usage", {})
-        prompt_tokens = usage.get("prompt_tokens", 0)
-        completion_tokens = usage.get("completion_tokens", 0)
+        # 7. Verification results mapping
+        verification_data = {
+            "accepted": response.verification.passed if response.verification else True,
+            "confidence": 1.0,
+            "entropy": float(response.verification.sequence_entropy) if (response.verification and response.verification.sequence_entropy is not None) else None,
+            "escalated": response.route_taken == "remote_fallback",
+            "reason": ", ".join(response.verification.failed_validators) if (response.verification and response.verification.failed_validators) else None
+        }
+
+        # 8. Token and Cost calculation
+        prompt_tokens = len(request.prompt) // 4
+        completion_tokens = response.tokens_consumed
         total_tokens = prompt_tokens + completion_tokens
-        model_name = model_meta.get("model", "Unknown Model").split('/')[-1]
+        
+        telemetry_data = {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": total_tokens,
+            "model_name": "local_llm" if response.route_taken == "local_llm" else "remote_fallback",
+            "latency_ms": response.latency_ms
+        }
 
         dense_baseline_cost = (prompt_tokens * 1.5) / 1e6 + (completion_tokens * 5.0) / 1e6
-
-        if response.escalated:
-            cheap_cost = (prompt_tokens * 0.15) / 1e6 + (20 * 0.60) / 1e6
-            dense_cost = (prompt_tokens * 1.5) / 1e6 + (completion_tokens * 5.0) / 1e6
-            actual_cost = cheap_cost + dense_cost
-            token_savings = 0
-            cost_savings_usd = 0.0
-            cost_savings_percentage = 0.0
-        elif decision.selected_route.value == "cheap":
+        if response.route_taken == "local_llm":
             actual_cost = (prompt_tokens * 0.15) / 1e6 + (completion_tokens * 0.60) / 1e6
             token_savings = total_tokens
             cost_savings_usd = max(0.0, dense_baseline_cost - actual_cost)
@@ -129,52 +187,28 @@ async def inspect_route(request: InspectorRequest):
             cost_savings_usd = 0.0
             cost_savings_percentage = 0.0
 
-        # 7. Build structured inspector payload
+        savings_data = {
+            "dense_baseline_cost": float(dense_baseline_cost),
+            "actual_cost": float(actual_cost),
+            "cost_savings_usd": float(cost_savings_usd),
+            "cost_savings_percentage": float(cost_savings_percentage),
+            "token_savings": int(token_savings)
+        }
+
         return {
             "prompt": request.prompt,
-            "features": {
-                "length": features.length,
-                "symbol_ratio": float(features.symbol_ratio),
-                "regex_density": int(features.regex_density),
-                "bm25_score": float(features.bm25_score),
-                "code_detected": code_matched,
-                "math_detected": math_matched,
-                "reasoning_count": reasoning_count,
-                "numeric_density": float(numeric_density)
-            },
-            "router": {
-                "raw_probability": raw_prob,
-                "calibrated_probability": float(decision.calibrated_probability),
-                "selected_route": decision.selected_route.value
-            },
-            "utilities": {
-                "cheap": float(decision.cheap_utility),
-                "dense": float(decision.dense_utility),
-                "cascade": float(decision.cascade_utility)
-            },
-            "verification": {
-                "accepted": response.verification_result.status.value == "pass" if response.verification_result else True,
-                "confidence": float(decision.calibrated_probability),
-                "entropy": float(response.verification_result.output_entropy) if (response.verification_result and response.verification_result.output_entropy is not None) else None,
-                "escalated": response.escalated,
-                "reason": response.metadata.get("escalation_reason") if response.metadata else None
-            },
-            "telemetry": {
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-                "total_tokens": total_tokens,
-                "model_name": model_name,
-                "latency_ms": (response.metadata.get("inference_time_ms", 0.0) + response.metadata.get("verification_time_ms", 0.0)) if response.metadata else 0.0
-            },
-            "savings": {
-                "dense_baseline_cost": float(dense_baseline_cost),
-                "actual_cost": float(actual_cost),
-                "cost_savings_usd": float(cost_savings_usd),
-                "cost_savings_percentage": float(cost_savings_percentage),
-                "token_savings": int(token_savings)
-            },
+            "features": raw_features,
+            "router": router_data,
+            "utilities": utilities_data,
+            "verification": verification_data,
+            "telemetry": telemetry_data,
+            "savings": savings_data,
             "answer": response.final_response,
-            "metadata": response.metadata
+            "metadata": {
+                "route_taken": response.route_taken,
+                "tokens_consumed": response.tokens_consumed,
+                "latency_ms": response.latency_ms
+            }
         }
 
     except Exception as e:

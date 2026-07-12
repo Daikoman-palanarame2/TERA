@@ -1,124 +1,221 @@
-from typing import List, Optional
+"""
+Module: backend/app/verification/rovl
+Purpose:
+    Core verification engine implementing the ROVL V2 pipeline: evaluates structural
+    schema matching, average per-token surprisal, stop-token termination, and orchestrates
+    the Local Judge model check.
+"""
 
-from app.verification.verification_types import (
-    VerificationStatus, 
-    FailureReason, 
-    SchemaType, 
-    VerificationResult
+import math
+import json
+import logging
+from datetime import datetime
+from typing import List, Optional, Callable
+
+from app.schemas.data_contracts import (
+    VerificationResult,
+    VerificationConstraints,
+    RawModelOutput,
+)
+from app.core.exceptions import VerificationError, ConfigurationError
+from app.core.config import (
+    ENTROPY_THRESHOLD,
+    SURPRISAL_THRESHOLD,
+    MIN_PROBABILITY_FLOOR,
 )
 from app.verification.validators import (
-    validate_schema, 
-    validate_length, 
-    validate_stop_tokens
+    validate_json_schema,
+    validate_regex,
+    validate_stop_sequences,
 )
-from app.verification.entropy import compute_entropy
+from app.verification.entropy import compute_sequence_entropy, compute_average_surprisal
+
+# Configure logger name as required by structured logging contract
+logger = logging.getLogger("tera_core")
+
+
+def log_structured(level: str, message: str, task_id: Optional[str] = None) -> None:
+    """Helper to output single-line JSON logs to stdout according to logging contract."""
+    log_entry = {
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "log_level": level,
+        "module": "app.verification.rovl",
+        "message": message,
+        "task_id": task_id,
+    }
+    json_str = json.dumps(log_entry)
+    # Output using python logging which directs to stdout
+    if level == "INFO":
+        logger.info(json_str)
+    elif level == "WARNING":
+        logger.warning(json_str)
+    elif level == "ERROR":
+        logger.error(json_str)
+    else:
+        logger.debug(json_str)
+
 
 class ROVL:
-    """
-    Purpose:
-        The Runtime Output Verification Layer (ROVL) orchestrates validation checks
-        on generations produced by the cheap model lane. If completions fail schema,
-        length, stop-token, or entropy checks, it flags validation failure to trigger
-        automatic escalation to the dense model lane.
-        
-    Time Complexity:
-        O(L + T + S * W) dominated by schema checks (JSON/regex), entropy loop, 
-        and stop sequence matching.
-        
-    Memory Complexity:
-        O(L) to load completion strings and token statistics in memory.
-    """
+    """Runtime Output Verification Layer orchestrating checks across syntax and logprobs."""
 
-    def __init__(self, entropy_threshold: float = 3.0, stop_sequences: Optional[List[str]] = None) -> None:
-        """
-        Purpose:
-            Initializes the verification layer with specific threshold parameters.
-            
-        Inputs:
-            entropy_threshold: The maximum acceptable sequence entropy threshold (default: 3.0).
-            stop_sequences: List of string stop tokens (e.g. ['\n', '}', '<|im_end|>']).
-            
-        Outputs:
-            None
-        """
+    def __init__(
+        self,
+        entropy_threshold: float = ENTROPY_THRESHOLD,
+        min_prob_floor: float = MIN_PROBABILITY_FLOOR,
+        local_judge: Optional[Callable[[str], bool]] = None,
+    ) -> None:
+        """Initialize audit limits from Settings configuration."""
+        # Ensure configuration parameters are valid
+        if entropy_threshold is None or entropy_threshold < 0:
+            raise ConfigurationError("Entropy threshold must be a non-negative float.")
+        if min_prob_floor is None or min_prob_floor < 0.0 or min_prob_floor > 1.0:
+            raise ConfigurationError(
+                "Min probability floor must be between 0.0 and 1.0."
+            )
+
         self.entropy_threshold = entropy_threshold
-        self.stop_sequences = stop_sequences or []
+        self.min_prob_floor = min_prob_floor
+        self.surprisal_threshold = SURPRISAL_THRESHOLD
+        self.local_judge = local_judge
 
     def verify(
         self,
-        text: str,
-        token_probs: Optional[List[float]] = None,
-        schema_type: SchemaType = SchemaType.NONE,
-        regex_pattern: Optional[str] = None,
-        min_chars: Optional[int] = None,
-        max_chars: Optional[int] = None,
-        max_token_ceiling_hit: bool = False
+        output: RawModelOutput,
+        constraints: VerificationConstraints,
+        task_id: Optional[str] = None,
     ) -> VerificationResult:
+        """Orchestrate verification pipeline check across syntax and statistical entropy.
+
+        Raises:
+            VerificationError: If critical validation engines fail structurally.
         """
-        Purpose:
-            Runs all validators and aggregates outcomes, implementing degraded observability fallback.
-            
-        Inputs:
-            text: Prompt completion string to check.
-            token_probs: List of generated token probabilities (None if unavailable).
-            schema_type: SchemaType enum.
-            regex_pattern: Optional regex pattern.
-            min_chars: Minimum character count.
-            max_chars: Maximum character count.
-            max_token_ceiling_hit: True if model truncated execution at token ceiling.
-            
-        Outputs:
-            A frozen VerificationResult containing individual outcome metrics.
-            
-        Time/Memory Complexity:
-            Same as class definitions, completing in microsecond scales.
-        """
-        # 1. Schema Validation
-        schema_passed = validate_schema(text, schema_type, regex_pattern)
-        
-        # 2. Length Validation
-        length_passed = validate_length(text, min_chars, max_chars, max_token_ceiling_hit)
-        
-        # 3. Stop token Validation
-        stop_token_passed = validate_stop_tokens(text, self.stop_sequences)
-        
-        # 4. Entropy Validation (with Degraded Observability Fallback)
-        output_entropy = compute_entropy(token_probs)
-        if output_entropy is None:
-            # Degraded observability mode: suspend checking, skip failure marking
-            entropy_passed = None
-        else:
-            entropy_passed = output_entropy <= self.entropy_threshold
-            
-        # 5. Aggregate failures
-        reasons: List[FailureReason] = []
-        
-        if not schema_passed:
-            reasons.append(FailureReason.SCHEMA)
-        if not length_passed:
-            reasons.append(FailureReason.LENGTH)
-        if not stop_token_passed:
-            reasons.append(FailureReason.STOP_TOKEN)
-        if entropy_passed is False:
-            reasons.append(FailureReason.ENTROPY)
-            
-        if len(reasons) > 0:
-            status = VerificationStatus.FAIL
-            # If multiple checkers fail, return FailureReason.MULTIPLE
-            if len(reasons) > 1:
-                failure_reasons = [FailureReason.MULTIPLE]
-            else:
-                failure_reasons = reasons
-        else:
-            status = VerificationStatus.PASS
-            failure_reasons = []
-            
+        # Validate inputs type conformity
+        if output is None or constraints is None:
+            raise VerificationError(
+                "RawModelOutput and VerificationConstraints must not be None."
+            )
+
+        failed_validators: List[str] = []
+
+        # ─── TIER 1: SCHEMA VALIDATION ───
+        if constraints.json_schema is not None:
+            try:
+                schema_passed = validate_json_schema(
+                    output.text, constraints.json_schema
+                )
+                if not schema_passed:
+                    failed_validators.append("json_schema")
+            except VerificationError as e:
+                log_structured(
+                    "ERROR",
+                    f"JSON Schema compilation or validation failed: {e}",
+                    task_id,
+                )
+                raise
+            except Exception as e:
+                log_structured(
+                    "ERROR",
+                    f"JSON Schema verification structural failure: {e}",
+                    task_id,
+                )
+                raise VerificationError(
+                    f"JSON Schema verification structural failure: {e}"
+                )
+
+        if constraints.regex_pattern is not None:
+            try:
+                regex_passed = validate_regex(output.text, constraints.regex_pattern)
+                if not regex_passed:
+                    failed_validators.append("regex_pattern")
+            except VerificationError as e:
+                log_structured(
+                    "ERROR", f"Regex compilation or execution failed: {e}", task_id
+                )
+                raise
+            except Exception as e:
+                log_structured(
+                    "ERROR", f"Regex verification structural failure: {e}", task_id
+                )
+                raise VerificationError(f"Regex verification structural failure: {e}")
+
+        # Character length constraints
+        if constraints.min_length_chars is not None:
+            if len(output.text) < constraints.min_length_chars:
+                failed_validators.append("min_length_chars")
+
+        if constraints.max_length_chars is not None:
+            if len(output.text) > constraints.max_length_chars:
+                failed_validators.append("max_length_chars")
+
+        # ─── TIER 2: ENTROPY & SURPRISAL ───
+        entropy_val = compute_sequence_entropy(output.tokens)
+        surprisal_val = compute_average_surprisal(output.tokens)
+
+        # 1. Entropy validation
+        if entropy_val > self.entropy_threshold:
+            failed_validators.append("entropy")
+            log_structured(
+                "WARNING",
+                f"Sequence entropy exceeded threshold. Value: {entropy_val:.2f}, Limit: {self.entropy_threshold:.2f}",
+                task_id,
+            )
+
+        # 2. Average surprisal validation
+        if surprisal_val > self.surprisal_threshold:
+            failed_validators.append("average_surprisal")
+            log_structured(
+                "WARNING",
+                f"Average surprisal exceeded threshold. Value: {surprisal_val:.2f}, Limit: {self.surprisal_threshold:.2f}",
+                task_id,
+            )
+
+        # 3. Minimum probability floor check on logprobs
+        prob_floor_failed = False
+        for token in output.tokens:
+            if token.logprob is not None:
+                try:
+                    p = math.exp(token.logprob)
+                except (ValueError, OverflowError):
+                    p = 0.0
+                if p < self.min_prob_floor:
+                    prob_floor_failed = True
+                    break
+        if prob_floor_failed:
+            failed_validators.append("probability_floor")
+            log_structured(
+                "WARNING",
+                f"Token probability fell below min probability floor {self.min_prob_floor}",
+                task_id,
+            )
+
+        # ─── TIER 3: STOP SEQUENCE VALIDATION ───
+        if constraints.stop_sequences:
+            try:
+                stop_passed = validate_stop_sequences(
+                    output.text, constraints.stop_sequences
+                )
+                if not stop_passed:
+                    failed_validators.append("stop_sequences")
+            except Exception as e:
+                log_structured("ERROR", f"Stop sequence matching failed: {e}", task_id)
+                raise VerificationError(f"Stop sequence matching failed: {e}")
+
+        # ─── TIER 4: LOCAL JUDGE ───
+        # Runs if all core syntactic and statistical checks have passed
+        if len(failed_validators) == 0 and self.local_judge is not None:
+            try:
+                judge_passed = self.local_judge(output.text)
+                if not judge_passed:
+                    failed_validators.append("local_judge")
+            except Exception as e:
+                log_structured("ERROR", f"Local Judge execution failed: {e}", task_id)
+                raise VerificationError(f"Local Judge execution failed: {e}")
+
+        passed = len(failed_validators) == 0
+
         return VerificationResult(
-            status=status,
-            failure_reasons=failure_reasons,
-            output_entropy=output_entropy,
-            schema_passed=schema_passed,
-            length_passed=length_passed,
-            stop_token_passed=stop_token_passed,
-            entropy_passed=entropy_passed
+            passed=passed,
+            average_surprisal=surprisal_val,
+            sequence_entropy=entropy_val,
+            failed_validators=failed_validators,
         )

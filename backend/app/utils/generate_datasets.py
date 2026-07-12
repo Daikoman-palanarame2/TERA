@@ -127,9 +127,9 @@ def generate_prompt_pool(rng: random.Random, domain: str, count: int) -> List[Tu
             if diff == "easy":
                 prompt = f"classify: Is this positive or negative: 'This product is absolute garbage!' (ID: {uid})"
             elif diff == "medium":
-                prompt = f"classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports."
+                prompt = "classify: Categorize the news headline: 'Tech giant launches new AI assistant with voice capabilities' into tech, business, politics, or sports."
             else:
-                prompt = f"classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'"
+                prompt = "classify: Perform multi-label classification on this customer feedback transcript: 'The customer service agent was very polite, but the product was delivered late and arrived damaged. I demand a full refund immediately.'"
                 
         elif domain == "json":
             if diff == "easy":
@@ -153,9 +153,9 @@ def generate_prompt_pool(rng: random.Random, domain: str, count: int) -> List[Tu
             if diff == "easy":
                 prompt = f"explain: What is the capital city of {city}'s country?"
             elif diff == "medium":
-                prompt = f"explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll."
+                prompt = "explain: Explain the biological process of photosynthesis and how light energy is captured by chlorophyll."
             else:
-                prompt = f"explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919."
+                prompt = "explain: Detail the historical timeline, key political agreements, and structural consequences of the Treaty of Versailles signed in 1919."
                 
         prompts.append((prompt, str(label), TASK_DOMAINS[domain]))
         

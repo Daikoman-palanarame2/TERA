@@ -3,70 +3,64 @@ import sys
 import os
 import asyncio
 import httpx
-import time
+import tempfile
 from unittest.mock import patch, MagicMock
+from typing import Dict, Any, Optional
 
 # Add backend directory to path to allow imports from app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../backend")))
 
-from app.core.settings import settings
-from app.router.runtime_router import RuntimeRouter
-from app.verification.verification_types import SchemaType, VerificationStatus, FailureReason
+from app.core.config import settings
 from app.verification.rovl import ROVL
-from app.inference.inference_types import InferenceRequest, InferenceResponse, ModelOutput
-from app.inference.orchestrator import InferenceOrchestrator
-from app.inference.cheap_model import CheapModel
-from app.inference.dense_model import DenseModel
+from app.schemas.data_contracts import InferenceRequest, RawModelOutput, TokenLogprob, TelemetryLog
 from app.inference.fireworks_model import FireworksModel
 from app.inference.model_interface import ModelInterface
+from app.core.orchestrator import TERAOrchestrator
+from app.cache.semantic_cache import SemanticCache
+from app.solvers.solver_registry import SolverRegistry
+from app.parser.intent_parser import IntentParser
+
+
+class MockSemanticCache:
+    def lookup(self, prompt: str, threshold: float = 0.95) -> Any:
+        return None
+    def insert(self, prompt: str, response: str) -> None:
+        pass
+
+
+class MockModelClient(ModelInterface):
+    def __init__(self, text: str = "Mock output", tokens: int = 5) -> None:
+        self.text = text
+        self.tokens = tokens
+
+    async def generate_async(self, prompt: str, params: Optional[Dict[str, Any]] = None) -> RawModelOutput:
+        return RawModelOutput(
+            text=self.text,
+            tokens=[TokenLogprob(token="test", logprob=-0.1)],
+            latency_ms=10.0,
+            usage_tokens=self.tokens
+        )
+
+
+class MockSettings:
+    def __init__(self, telemetry_path: str) -> None:
+        self.tera_telemetry_path = telemetry_path
+
 
 class TestAsyncTransition(unittest.IsolatedAsyncioTestCase):
 
-    def setUp(self):
-        self.models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../backend/app/models"))
-        self.router = RuntimeRouter(self.models_dir)
-        self.rovl = ROVL(entropy_threshold=settings.entropy_threshold)
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.telemetry_path = os.path.join(self.temp_dir.name, "telemetry.json")
+        self.settings = MockSettings(self.telemetry_path)
+        self.rovl = ROVL(entropy_threshold=3.0)
 
-    async def test_sync_async_equivalence(self):
-        """
-        Verifies that run() and run_async() produce identical routing decisions,
-        utility calculations, escalation decisions, and final output payloads.
-        """
-        cheap_model = CheapModel()
-        dense_model = DenseModel()
-        orchestrator = InferenceOrchestrator(self.router, cheap_model, dense_model, self.rovl)
-
-        request = InferenceRequest(
-            prompt="solve: x + 2 = 5",
-            c2=10.0,
-            c3=100.0,
-            lambda_coeff=0.5,
-            alpha_dense=0.9,
-            schema_type=SchemaType.NONE
-        )
-
-        # 1. Run Synchronously
-        sync_res = orchestrator.run(request)
-
-        # 2. Run Asynchronously
-        async_res = await orchestrator.run_async(request)
-
-        # 3. Assert Equivalence
-        self.assertEqual(sync_res.final_response, async_res.final_response)
-        self.assertEqual(sync_res.selected_route, async_res.selected_route)
-        self.assertEqual(sync_res.escalated, async_res.escalated)
-        self.assertEqual(sync_res.metadata["router_probability"], async_res.metadata["router_probability"])
-        self.assertEqual(sync_res.metadata["cheap_utility"], async_res.metadata["cheap_utility"])
-        self.assertEqual(sync_res.metadata["dense_utility"], async_res.metadata["dense_utility"])
-        self.assertEqual(sync_res.metadata["cascade_utility"], async_res.metadata["cascade_utility"])
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
 
     @patch("httpx.AsyncClient.post")
-    async def test_fireworks_model_retry_success_on_retry(self, mock_post):
-        """
-        Verifies that if the first request fails with HTTP 429, the client retries
-        exactly once and succeeds if the second request returns status 200.
-        """
-        # Mock initial rate limit failure (429) then successful response
+    async def test_fireworks_model_retry_success_on_retry(self, mock_post: MagicMock) -> None:
+        """Verifies that if the first request fails with HTTP 429, the client retries exactly once."""
         mock_response_fail = MagicMock()
         mock_response_fail.status_code = 429
         mock_response_fail.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -88,25 +82,19 @@ class TestAsyncTransition(unittest.IsolatedAsyncioTestCase):
             "usage": {"prompt_tokens": 10, "completion_tokens": 10}
         }
 
-        # First call fails, second succeeds
         mock_post.side_effect = [mock_response_fail, mock_response_success]
 
         client = FireworksModel(model_name="test-model", api_key="dummy-key", base_url="https://api.example.com")
         
-        # Patch sleep to avoid delay during testing
         with patch("asyncio.sleep", return_value=None) as mock_sleep:
             output = await client.generate_async("hello")
-            
             self.assertEqual(output.text, "Success response after retry")
             self.assertEqual(mock_post.call_count, 2)
             mock_sleep.assert_called_once()
 
     @patch("httpx.AsyncClient.post")
-    async def test_fireworks_model_retry_exhaustion_raises(self, mock_post):
-        """
-        Verifies that if both attempts fail with HTTP 503, the client raises
-        the exception and does not attempt a third request (max ONE retry).
-        """
+    async def test_fireworks_model_retry_exhaustion_raises(self, mock_post: MagicMock) -> None:
+        """Verifies that if both attempts fail with HTTP 503, the client raises the exception."""
         mock_response = MagicMock()
         mock_response.status_code = 503
         mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
@@ -125,61 +113,61 @@ class TestAsyncTransition(unittest.IsolatedAsyncioTestCase):
                 
             self.assertEqual(mock_post.call_count, 2)
 
-    async def test_cheap_model_failure_isolation_and_escalation(self):
-        """
-        Verifies that if the cheap model throws a connection/network exception,
-        the orchestrator run_async catches it, logs a warning, and escalates
-        to the dense model successfully instead of crashing.
-        """
-        # Set up a cheap model that always crashes
+    async def test_cheap_model_failure_isolation_and_escalation(self) -> None:
+        """Verifies that if the cheap model throws an exception, TERAOrchestrator escalates to remote fallback."""
+        cache = MockSemanticCache()  # type: ignore
+        registry = SolverRegistry()
+        registry.lock()
+        parser = IntentParser(registry)
+        
         bad_cheap = MagicMock(spec=ModelInterface)
         bad_cheap.generate_async.side_effect = httpx.ConnectError("Connection refused")
         
-        # Dense model works fine
-        good_dense = DenseModel(default_text="Dense recovery response")
+        good_remote = MockModelClient(text="Remote recovery response", tokens=5)
         
-        orchestrator = InferenceOrchestrator(self.router, bad_cheap, good_dense, self.rovl)
+        orchestrator = TERAOrchestrator(
+            cache=cache,  # type: ignore
+            parser=parser,
+            registry=registry,
+            local_client=bad_cheap,
+            remote_client=good_remote,
+            rovl=self.rovl,
+            settings=self.settings
+        )
         
         request = InferenceRequest(
             prompt="solve: x + 2 = 5",
+            task_id="task_0_recovery",
             c2=10.0,
             c3=100.0,
             lambda_coeff=0.5,
             alpha_dense=0.9,
-            schema_type=SchemaType.NONE
+            schema_type="none"
         )
         
-        # Run orchestrator
-        response = await orchestrator.run_async(request)
+        response = await orchestrator.process_request_async(request)
         
-        # Verify it escalated and returned dense model output
-        self.assertEqual(response.final_response, "Dense recovery response")
-        self.assertTrue(response.escalated)
-        self.assertIn("cheap_model_failure", response.metadata["escalation_reason"])
+        self.assertEqual(response.final_response, "Remote recovery response")
+        self.assertEqual(response.route_taken, "remote_fallback")
+        self.assertEqual(response.tokens_consumed, 5)
 
-    async def test_bounded_concurrency_semaphore(self):
-        """
-        Stress test verifying that concurrency is successfully bounded by a semaphore
-        when processing multiple concurrent requests.
-        """
+    async def test_bounded_concurrency_semaphore(self) -> None:
+        """Stress test verifying that concurrency is successfully bounded by a semaphore."""
         sem = asyncio.Semaphore(2)
         active_requests = 0
         max_seen_concurrency = 0
 
-        async def worker():
+        async def worker() -> None:
             nonlocal active_requests, max_seen_concurrency
             async with sem:
                 active_requests += 1
                 max_seen_concurrency = max(max_seen_concurrency, active_requests)
-                # Sleep to simulate network delay
                 await asyncio.sleep(0.01)
                 active_requests -= 1
 
-        # Run 10 workers concurrently
         await asyncio.gather(*(worker() for _ in range(10)))
-        
-        # Max concurrency seen should be exactly 2
         self.assertEqual(max_seen_concurrency, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

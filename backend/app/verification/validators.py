@@ -1,119 +1,89 @@
-import json
+"""
+Module: backend/app/verification/validators
+Purpose:
+    Implements JSON schema, regex pattern, and stop sequence validators.
+"""
+
 import re
-from typing import List, Optional
-from app.verification.verification_types import SchemaType
+import json
+import jsonschema
+import concurrent.futures
+from typing import List, Dict, Any
+from app.core.exceptions import VerificationError
 
-"""
-This module implements deterministic, CPU-bound validation checkers for prompt completions.
-"""
 
-def validate_schema(text: str, schema_type: SchemaType, regex_pattern: Optional[str] = None) -> bool:
+def validate_json_schema(text: str, schema: Dict[str, Any]) -> bool:
+    """Validate JSON text against a target JSON Schema dictionary.
+
+    Args:
+        text: The string output to check.
+        schema: OpenAPI or JSON Schema dictionary structure.
+
+    Returns:
+        True if the text is valid JSON and matches the schema, False otherwise.
+
+    Raises:
+        VerificationError: If the schema itself is invalid.
     """
-    Purpose:
-        Validates completion string structure against JSON parse or regular expressions.
-        
-    Inputs:
-        text: Prompt completion string to validate.
-        schema_type: SchemaType enum selection (NONE, JSON, or REGEX).
-        regex_pattern: Optional regex pattern string to evaluate.
-        
-    Outputs:
-        True if text conforms to selected schema constraints, False otherwise.
-        
-    Time Complexity:
-        - SchemaType.JSON: O(L) where L is text character length.
-        - SchemaType.REGEX: O(L * P) where P is regex pattern complexity.
-        - SchemaType.NONE: O(1).
-        
-    Memory Complexity:
-        O(L) to load the JSON AST structure.
-    """
-    if schema_type == SchemaType.NONE:
+    try:
+        data = json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        return False
+
+    try:
+        jsonschema.validate(instance=data, schema=schema)
         return True
-        
-    if schema_type == SchemaType.JSON:
+    except jsonschema.exceptions.SchemaError as e:
+        raise VerificationError(f"Invalid schema dictionary: {e}")
+    except jsonschema.exceptions.ValidationError:
+        return False
+
+
+def validate_regex(text: str, pattern: str) -> bool:
+    """Check if the text matches a compiled regex pattern.
+
+    Args:
+        text: The string output to check.
+        pattern: The regex pattern string.
+
+    Returns:
+        True if pattern is found, False otherwise.
+
+    Raises:
+        VerificationError: If pattern string is invalid and fails to compile.
+    """
+    try:
+        compiled = re.compile(pattern)
+    except re.error as e:
+        raise VerificationError(
+            f"Catastrophic or invalid regex pattern fails to compile: {e}"
+        )
+
+    # Timeout-safe execution: run re.search in a ThreadPoolExecutor with a 2.0s timeout
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(compiled.search, text)
         try:
-            json.loads(text)
-            return True
-        except (json.JSONDecodeError, TypeError):
-            return False
-            
-    if schema_type == SchemaType.REGEX:
-        if not regex_pattern:
-            return True
-        try:
-            match = re.search(regex_pattern, text)
+            match = future.result(timeout=2.0)
             return match is not None
-        except re.error:
+        except concurrent.futures.TimeoutError:
             return False
-            
-    return False
 
 
-def validate_length(
-    text: str, 
-    min_chars: Optional[int] = None, 
-    max_chars: Optional[int] = None, 
-    max_token_ceiling_hit: bool = False
-) -> bool:
-    """
-    Purpose:
-        Validates completion absolute character bounds and checks token ceiling flags.
-        
-    Inputs:
-        text: Prompt completion string to validate.
-        min_chars: Minimum required character count (optional).
-        max_chars: Maximum allowed character count (optional).
-        max_token_ceiling_hit: Boolean flag from model client indicating execution truncated
-                              due to token budget limit hits.
-                              
-    Outputs:
-        True if all bounds are respected and token ceiling was not hit, False otherwise.
-        
-    Time Complexity:
-        O(1) (evaluates len(text) and boolean flag).
-        
-    Memory Complexity:
-        O(1) auxiliary memory.
-    """
-    if max_token_ceiling_hit:
-        return False
-        
-    length = len(text)
-    if min_chars is not None and length < min_chars:
-        return False
-        
-    if max_chars is not None and length > max_chars:
-        return False
-        
-    return True
+def validate_stop_sequences(text: str, stop_sequences: List[str]) -> bool:
+    """Verify that the generation naturally terminated on a valid stop sequence.
 
+    Args:
+        text: The string output to check.
+        stop_sequences: List of target stop tokens.
 
-def validate_stop_tokens(text: str, stop_sequences: Optional[List[str]] = None) -> bool:
-    """
-    Purpose:
-        Validates that the generated output terminates cleanly with a valid stop token,
-        preventing acceptance of abruptly truncated sentences.
-        
-    Inputs:
-        text: Prompt completion string to validate.
-        stop_sequences: List of string stop tokens (e.g. ['\n', '}', '<|im_end|>']).
-        
-    Outputs:
-        True if text terminates with at least one stop sequence (or if none are configured).
-        False if text terminates without matching stop sequences.
-        
-    Time Complexity:
-        O(S * W) where S is number of stop sequences and W is average stop sequence length.
-        
-    Memory Complexity:
-        O(1) auxiliary memory.
+    Returns:
+        True if output ends with a registered stop sequence or contains it.
     """
     if not stop_sequences:
         return True
-        
+
     for seq in stop_sequences:
-        if text.endswith(seq):
+        if text.endswith(seq) or seq in text:
             return True
-            
+
     return False

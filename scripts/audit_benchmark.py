@@ -16,11 +16,39 @@ def audit():
         metadata = json.load(f)
     with open(results_path, "r", encoding="utf-8") as f:
         results = json.load(f)
-    with open(telemetry_path, "r", encoding="utf-8") as f:
-        telemetry = json.load(f)
+        
+    try:
+        with open(telemetry_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if content.startswith("[") and content.endswith("]"):
+                telemetry = json.loads(content)
+            else:
+                f.seek(0)
+                telemetry = []
+                for line in f:
+                    if line.strip():
+                        telemetry.append(json.loads(line))
+    except Exception as e:
+        telemetry = []
+        with open(telemetry_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    telemetry.append(json.loads(line))
         
     results_map = {item["task_id"]: item for item in results}
-    telemetry_map = {item["task_id"]: item for item in telemetry}
+    
+    import re
+    telemetry_map = {}
+    for item in telemetry:
+        tid_raw = item.get("task_id")
+        if not tid_raw:
+            continue
+        match = re.search(r'(math|prog|sci|gk|sum|inst|creat|adv)_0*\d+', tid_raw.lower())
+        if match:
+            tid = match.group(0)
+        else:
+            tid = tid_raw
+        telemetry_map[tid] = item
     
     # Task 1: Difficulty Distribution
     diff_counts = {"Easy": 0, "Medium": 0, "Hard": 0}

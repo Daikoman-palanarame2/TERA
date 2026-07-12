@@ -125,11 +125,14 @@ class TestProductionPhase1(unittest.TestCase):
         # Verify telemetry file compiled correctly
         telemetry_file = os.path.join(self.temp_dir.name, "telemetry.json")
         self.assertTrue(os.path.exists(telemetry_file))
+        tele_data = []
         with open(telemetry_file, "r", encoding="utf-8") as f:
-            tele_data = json.load(f)
+            for line in f:
+                if line.strip():
+                    tele_data.append(json.loads(line))
         self.assertEqual(len(tele_data), 2)
-        self.assertEqual(tele_data[0]["task_id"], "test-1")
-        self.assertIn("selected_route", tele_data[0])
+        self.assertEqual(tele_data[0]["task_id"], "task_0_test1")
+        self.assertIn("route_taken", tele_data[0])
 
 if __name__ == "__main__":
     unittest.main()

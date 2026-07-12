@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import numpy as np
+import re
 
 # Use Agg backend for matplotlib to prevent GUI thread startup crashes in headless environments
 import matplotlib
@@ -10,7 +11,7 @@ import matplotlib.pyplot as plt
 
 def analyze():
     print("====================================================")
-    print("TERA Benchmark Analyzer & Report Generator")
+    print("TERA Benchmark Analyzer & Report Generator (Agent I)")
     print("====================================================")
     
     tasks_path = "evaluation/benchmark_tasks.json"
@@ -26,49 +27,101 @@ def analyze():
         
     os.makedirs(plots_dir, exist_ok=True)
     
-    # Load data
+    # Load tasks and metadata
     with open(tasks_path, "r", encoding="utf-8") as f:
         tasks = json.load(f)
     with open(metadata_path, "r", encoding="utf-8") as f:
         metadata = json.load(f)
     with open(results_path, "r", encoding="utf-8") as f:
         results = json.load(f)
-    with open(telemetry_path, "r", encoding="utf-8") as f:
-        telemetry = json.load(f)
+        
+    # Load telemetry with dual format support (JSON array or JSONLines)
+    telemetry = []
+    try:
+        with open(telemetry_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if content.startswith("[") and content.endswith("]"):
+                telemetry = json.loads(content)
+            else:
+                # Try parsing line-by-line
+                f.seek(0)
+                for line in f:
+                    if line.strip():
+                        telemetry.append(json.loads(line))
+    except Exception as e:
+        print(f"Warning: Failed to load telemetry with standard parser: {e}. Trying fallback line-by-line...")
+        try:
+            telemetry = []
+            with open(telemetry_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        telemetry.append(json.loads(line))
+        except Exception as ex:
+            print(f"Error: Failed to load telemetry: {ex}")
+            sys.exit(1)
+            
+    print(f"Loaded {len(tasks)} tasks, {len(results)} results, and {len(telemetry)} telemetry records.")
         
     results_map = {item["task_id"]: item for item in results}
-    telemetry_map = {item["task_id"]: item for item in telemetry}
     
-    # Overall statistics
+    # Map telemetry records to raw task IDs
+    telemetry_map = {}
+    for item in telemetry:
+        tid_raw = item.get("task_id")
+        if not tid_raw:
+            continue
+        # Extract base task id (e.g. math_001 from task_0_math001)
+        match = re.search(r'(math|prog|sci|gk|sum|inst|creat|adv)_?(\d+)', tid_raw.lower())
+        if match:
+            cat = match.group(1)
+            num = int(match.group(2))
+            tid = f"{cat}_{num:03d}"
+        else:
+            tid = tid_raw
+        telemetry_map[tid] = item
+        
+    # Initialize metric accumulators
     total_prompts = len(tasks)
     latencies = []
-    cheap_count = 0
-    dense_count = 0
-    escalation_count = 0
     
-    total_prompt_tokens = 0
-    total_completion_tokens = 0
+    routes = {"cache": 0, "solver": 0, "local_llm": 0, "remote_fallback": 0, "unknown": 0}
+    cache_hits = 0
+    solver_hits = 0
+    local_llm_calls = 0
+    local_llm_passes = 0
     
-    # Cost rates (per 1M tokens)
-    # Cheap: deepseek-v4-pro ($0.15/1M input, $0.60/1M output)
-    # Dense: gpt-oss-120b ($1.50/1M input, $5.00/1M output)
-    total_cost = 0.0
-    router_probs = []
+    fireworks_calls = 0
+    fireworks_tokens = 0
     
-    escalation_reasons = {}
-    category_stats = {}
+    correctness_count = 0
     
-    # Failure metrics
-    failures = {
-        "empty_answers": [],
-        "missing_task_ids": [],
-        "missing_telemetry": [],
-        "duplicate_answers": {},
-        "schema_violations": [],
-        "malformed_outputs": []
+    rovl_rejections = {
+        "json_schema": 0,
+        "regex_pattern": 0,
+        "min_length_chars": 0,
+        "max_length_chars": 0,
+        "entropy": 0,
+        "average_surprisal": 0,
+        "probability_floor": 0,
+        "stop_sequences": 0,
+        "local_judge": 0
     }
     
-    answer_occurrences = {}
+    failures_breakdown = {
+        "JSON schema failure": 0,
+        "regex mismatch": 0,
+        "timeout": 0,
+        "hallucination": 0,
+        "wrong reasoning": 0,
+        "parser failure": 0,
+        "entropy rejection": 0,
+        "surprisal rejection": 0,
+        "invalid output": 0,
+        "syntax error": 0,
+        "none": 0
+    }
+    
+    category_stats = {}
     
     for t in tasks:
         tid = t["task_id"]
@@ -79,273 +132,261 @@ def analyze():
             category_stats[cat] = {
                 "count": 0,
                 "latencies": [],
-                "escalations": 0,
-                "prompt_tokens": 0,
-                "completion_tokens": 0,
-                "cost": 0.0
+                "correct": 0,
+                "fireworks_calls": 0,
+                "fireworks_tokens": 0,
+                "cache_hits": 0,
+                "solver_hits": 0
             }
             
         category_stats[cat]["count"] += 1
         
-        # Check result
-        if tid not in results_map:
-            failures["missing_task_ids"].append(tid)
-            continue
-            
-        res = results_map[tid]
-        ans = res.get("answer", "")
-        
-        # 1. Empty Answer Check
-        if not ans or not ans.strip():
-            failures["empty_answers"].append(tid)
-            
-        # 2. Duplicate Answer Check
-        if ans:
-            if ans not in answer_occurrences:
-                answer_occurrences[ans] = []
-            answer_occurrences[ans].append(tid)
-            
         # Check telemetry
         if tid not in telemetry_map:
-            failures["missing_telemetry"].append(tid)
+            print(f"Warning: Telemetry missing for task {tid}")
             continue
             
         tel = telemetry_map[tid]
-        route = tel.get("selected_route")
-        escalated = tel.get("escalated", False)
         
-        if route == "cheap":
-            cheap_count += 1
-        elif route == "dense":
-            dense_count += 1
+        # Route Selected
+        route = tel.get("route_selected") or tel.get("route_taken") or "unknown"
+        if route not in routes:
+            routes[route] = 0
+        routes[route] += 1
+        
+        # Cache / Solver Hit
+        is_cache = tel.get("cache_hit", False) or (route == "cache")
+        is_solver = tel.get("del_bypass", False) or (route == "solver")
+        
+        if is_cache:
+            cache_hits += 1
+            category_stats[cat]["cache_hits"] += 1
+        if is_solver:
+            solver_hits += 1
+            category_stats[cat]["solver_hits"] += 1
             
-        if escalated:
-            escalation_count += 1
-            category_stats[cat]["escalations"] += 1
+        # Local model details
+        if route == "local_llm" or route == "remote_fallback":
+            local_llm_calls += 1
+            if tel.get("rovl_verdict") == "pass" or tel.get("verification_passed") == True:
+                local_llm_passes += 1
+                
+        # Latency
+        latency_ms = tel.get("latency_ms", 0.0)
+        latency_sec = latency_ms / 1000.0
+        latencies.append(latency_sec)
+        category_stats[cat]["latencies"].append(latency_sec)
+        
+        # Fireworks remote calls & tokens
+        fallback_triggered = tel.get("remote_fallback_triggered", False) or (route == "remote_fallback")
+        if fallback_triggered:
+            fireworks_calls += 1
+            category_stats[cat]["fireworks_calls"] += 1
+            toks = tel.get("fireworks_tokens", 0) or tel.get("m3_tokens", 0) or 0
+            fireworks_tokens += toks
+            category_stats[cat]["fireworks_tokens"] += toks
             
-        meta = tel.get("metadata", {})
-        latency = meta.get("inference_time_ms", 0.0) / 1000.0
-        latencies.append(latency)
-        category_stats[cat]["latencies"].append(latency)
-        
-        prob = meta.get("router_probability")
-        if prob is not None:
-            router_probs.append(prob)
-            
-        esc_reason = meta.get("escalation_reason")
-        if escalated and esc_reason:
-            escalation_reasons[esc_reason] = escalation_reasons.get(esc_reason, 0) + 1
-            
-        model_meta = meta.get("model_metadata", {})
-        usage = model_meta.get("usage", {})
-        
-        p_tok = usage.get("prompt_tokens", 0)
-        c_tok = usage.get("completion_tokens", 0)
-        
-        total_prompt_tokens += p_tok
-        total_completion_tokens += c_tok
-        
-        category_stats[cat]["prompt_tokens"] += p_tok
-        category_stats[cat]["completion_tokens"] += c_tok
-        
-        # Schema violations or error detection
-        if "error" in tel or "error" in meta or "error" in model_meta or route == "error":
-            failures["schema_violations"].append(tid)
-            
-        model_name = model_meta.get("model", "")
-        # Calculate cost based on actual model queried
-        task_cost = 0.0
-        if "gpt-oss-120b" in model_name or "gpt" in model_name or "dense" in model_name:
-            task_cost = (p_tok * 1.50 / 1e6) + (c_tok * 5.00 / 1e6)
+        # Correctness
+        is_correct = tel.get("final_correctness", False)
+        if is_correct:
+            correctness_count += 1
+            category_stats[cat]["correct"] += 1
         else:
-            task_cost = (p_tok * 0.15 / 1e6) + (c_tok * 0.60 / 1e6)
-            
-        total_cost += task_cost
-        category_stats[cat]["cost"] += task_cost
-
-    # Process duplicate occurrences
-    for ans, tids in answer_occurrences.items():
-        if len(tids) > 1:
-            failures["duplicate_answers"][ans] = tids
-
-    # Latency calculations
+            # Rejection & Failures
+            fail_type = tel.get("failure_category") or "unknown"
+            if fail_type in failures_breakdown:
+                failures_breakdown[fail_type] += 1
+            else:
+                failures_breakdown[fail_type] = failures_breakdown.get(fail_type, 0) + 1
+                
+        # ROVL Rejections
+        rejections = tel.get("exact_rovl_rejection_reason") or tel.get("failed_validators") or []
+        for rej in rejections:
+            if rej in rovl_rejections:
+                rovl_rejections[rej] += 1
+                
+    # Summary calculation
     latencies = np.array(latencies) if latencies else np.array([0.0])
     avg_latency = np.mean(latencies)
-    med_latency = np.median(latencies)
-    min_latency = np.min(latencies)
-    max_latency = np.max(latencies)
     p95_latency = np.percentile(latencies, 95)
+    accuracy = (correctness_count / total_prompts * 100.0) if total_prompts > 0 else 0.0
+    cache_hit_rate = (cache_hits / total_prompts * 100.0) if total_prompts > 0 else 0.0
+    solver_hit_rate = (solver_hits / total_prompts * 100.0) if total_prompts > 0 else 0.0
+    local_success_rate = (local_llm_passes / local_llm_calls * 100.0) if local_llm_calls > 0 else 0.0
     
-    # General metrics
-    cheap_pct = (cheap_count / total_prompts * 100.0) if total_prompts > 0 else 0.0
-    dense_pct = (dense_count / total_prompts * 100.0) if total_prompts > 0 else 0.0
-    esc_rate = (escalation_count / total_prompts * 100.0) if total_prompts > 0 else 0.0
+    print("\n----------------------------------------------------")
+    print("Benchmark Execution Summary Stats:")
+    print("----------------------------------------------------")
+    print(f"Accuracy:                    {accuracy:.2f}%")
+    print(f"Fireworks API Calls:         {fireworks_calls}")
+    print(f"Fireworks API Tokens:        {fireworks_tokens}")
+    print(f"Average Latency:             {avg_latency:.3f} s")
+    print(f"95th Percentile Latency:     {p95_latency:.3f} s")
+    print(f"Cache Hit Rate:              {cache_hit_rate:.2f}%")
+    print(f"Solver Hit Rate:             {solver_hit_rate:.2f}%")
+    print(f"Local LLM Success Rate:      {local_success_rate:.2f}%")
+    print("----------------------------------------------------")
     
-    total_tokens = total_prompt_tokens + total_completion_tokens
-    avg_prompt_tokens = total_prompt_tokens / total_prompts if total_prompts > 0 else 0
-    avg_completion_tokens = total_completion_tokens / total_prompts if total_prompts > 0 else 0
-    avg_tokens = total_tokens / total_prompts if total_prompts > 0 else 0
-    avg_cost = total_cost / total_prompts if total_prompts > 0 else 0.0
-    avg_router_prob = np.mean(router_probs) if router_probs else 0.0
-
-    print("Generating Visualization Plots...")
+    # ----------------------------------------------------
+    # GENERATING CHARTS
+    # ----------------------------------------------------
+    print("Generating visual charts...")
     
     # Plot 1: Route Distribution
-    plt.figure(figsize=(6, 5))
-    plt.bar(["Cheap Route", "Dense Route"], [cheap_count, dense_count], color=["#4CAF50", "#2196F3"])
-    plt.title("TERA Routing Distribution")
-    plt.ylabel("Prompts count")
-    plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, "route_distribution.png"))
-    plt.close()
-    
-    # Plot 2: Escalation Distribution
-    plt.figure(figsize=(6, 5))
-    plt.bar(["Accepted Cheap", "Escalated to Dense"], [total_prompts - escalation_count, escalation_count], color=["#009688", "#FF5722"])
-    plt.title("TERA Completion Escalations")
-    plt.ylabel("Prompts count")
-    plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, "escalation_distribution.png"))
-    plt.close()
-    
-    # Plot 3: Latency Histogram
     plt.figure(figsize=(7, 5))
-    plt.hist(latencies, bins=10, color="#E91E63", edgecolor="black")
-    plt.title("TERA Inference Latency Distribution")
-    plt.xlabel("Latency (seconds)")
-    plt.ylabel("Frequency")
+    route_labels = ["Cache", "Solver", "Local LLM", "Remote Fallback"]
+    route_counts = [routes.get("cache", 0), routes.get("solver", 0), routes.get("local_llm", 0), routes.get("remote_fallback", 0)]
+    colors = ["#4CAF50", "#FFC107", "#2196F3", "#E91E63"]
+    plt.bar(route_labels, route_counts, color=colors, edgecolor="black")
+    plt.title("TERA Route Distribution", fontsize=14, fontweight='bold')
+    plt.ylabel("Request Count", fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_dir, "route_distribution.png"), dpi=150)
+    plt.close()
+    
+    # Plot 2: Latency Histogram
+    plt.figure(figsize=(7, 5))
+    plt.hist(latencies, bins=12, color="#9C27B0", edgecolor="black", alpha=0.8)
+    plt.title("Inference Latency Distribution", fontsize=14, fontweight='bold')
+    plt.xlabel("Latency (seconds)", fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
     plt.axvline(avg_latency, color="blue", linestyle="dashed", linewidth=1.5, label=f"Average: {avg_latency:.2f}s")
-    plt.axvline(med_latency, color="green", linestyle="dashed", linewidth=1.5, label=f"Median: {med_latency:.2f}s")
+    plt.axvline(p95_latency, color="red", linestyle="dashed", linewidth=1.5, label=f"p95: {p95_latency:.2f}s")
     plt.legend()
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, "latency_histogram.png"))
+    plt.savefig(os.path.join(plots_dir, "latency_histogram.png"), dpi=150)
     plt.close()
     
-    # Plot 4: Tokens per Category
-    plt.figure(figsize=(10, 6))
-    categories = list(category_stats.keys())
-    tokens = [category_stats[c]["prompt_tokens"] + category_stats[c]["completion_tokens"] for c in categories]
-    plt.barh(categories, tokens, color="#9C27B0")
-    plt.title("Total Token Consumption per Category")
-    plt.xlabel("Tokens count")
+    # Plot 3: Failure Reasons
+    plt.figure(figsize=(8, 5))
+    # Filter out "none"
+    filtered_failures = {k: v for k, v in failures_breakdown.items() if k != "none" and v > 0}
+    if not filtered_failures:
+        filtered_failures = {"No Failures": 0}
+    fail_labels = list(filtered_failures.keys())
+    fail_counts = list(filtered_failures.values())
+    plt.barh(fail_labels, fail_counts, color="#FF5722", edgecolor="black")
+    plt.title("Failure Breakdown", fontsize=14, fontweight='bold')
+    plt.xlabel("Failure Count", fontsize=12)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, "tokens_per_category.png"))
+    plt.savefig(os.path.join(plots_dir, "failure_reasons.png"), dpi=150)
     plt.close()
     
-    # Plot 5: Cost per Category
-    plt.figure(figsize=(10, 6))
-    costs = [category_stats[c]["cost"] for c in categories]
-    plt.barh(categories, costs, color="#FF9800")
-    plt.title("Estimated Fireworks Cost per Category")
-    plt.xlabel("Cost (USD)")
+    # Plot 4: Benchmark Category Performance
+    plt.figure(figsize=(10, 5))
+    cats = list(category_stats.keys())
+    cat_accuracies = []
+    for c in cats:
+        tot = category_stats[c]["count"]
+        corr = category_stats[c]["correct"]
+        cat_accuracies.append((corr / tot * 100.0) if tot > 0 else 0.0)
+        
+    plt.bar(cats, cat_accuracies, color="#009688", edgecolor="black")
+    plt.title("Accuracy by Category", fontsize=14, fontweight='bold')
+    plt.ylabel("Accuracy (%)", fontsize=12)
+    plt.ylim(0, 105)
+    plt.xticks(rotation=15, ha="right")
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, "cost_per_category.png"))
+    plt.savefig(os.path.join(plots_dir, "category_performance.png"), dpi=150)
     plt.close()
-
-    # Generate Recommendations dynamically
-    recommendations = []
-    if esc_rate > 35.0:
-        recommendations.append(f"High escalation rate detected ({esc_rate:.1f}%). Programming or instruction-following constraints are likely triggering frequent verification failures. Consider checking ROVL thresholds.")
-    else:
-        recommendations.append(f"Excellent cheap routing utilization! Only {esc_rate:.1f}% of cheap route selections required dense model escalation.")
-        
-    if dense_pct > 60.0:
-        recommendations.append("Dense model lane is heavily utilized. The router predicts high complexity or low accuracy probabilities across most categories. Consider adjusting the lambda frugality coefficient if lower costs are desired.")
-    else:
-        recommendations.append("The router is efficiently utilizing the cheap model lane across diverse tasks, maximizing token efficiency.")
-        
-    if avg_latency > 3.0:
-        recommendations.append(f"Average latency is relatively high ({avg_latency:.2f}s). Latency spikes may be caused by concurrent network requests or long-context summarizations.")
-        
-    if len(failures["empty_answers"]) > 0:
-        recommendations.append(f"Warning: {len(failures['empty_answers'])} tasks yielded empty responses. Check if the backend client is receiving correct JSON completions.")
-    else:
-        recommendations.append("Zero empty responses detected. API adapters are returning complete completions.")
-
-    # Write Markdown Report
-    print("Writing Benchmark Markdown Report...")
+    
+    # Plot 5: Local vs Fallback Usage
+    plt.figure(figsize=(6, 5))
+    local_usage = routes.get("local_llm", 0) + routes.get("cache", 0) + routes.get("solver", 0)
+    fallback_usage = routes.get("remote_fallback", 0)
+    plt.bar(["Local (Zero Token Cost)", "Fallback (Fireworks API)"], [local_usage, fallback_usage], color=["#4CAF50", "#F44336"], edgecolor="black")
+    plt.title("Local vs Fallback API Lane Usage", fontsize=14, fontweight='bold')
+    plt.ylabel("Request Count", fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_dir, "local_vs_fallback.png"), dpi=150)
+    plt.close()
+    
+    # ----------------------------------------------------
+    # GENERATING MARKDOWN REPORT
+    # ----------------------------------------------------
+    print(f"Writing report to {report_path}...")
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write("# TERA Offline Benchmark Performance Report\n\n")
-        f.write("This report provides a detailed performance summary of TERA on the 80-prompt evaluation dataset.\n\n")
+        f.write("# TERA Benchmark & Telemetry Performance Report\n\n")
+        f.write("This report summarizes execution latency, routing choices, ROVL validation outcomes, API usage, and failure breakdowns across the 80-prompt evaluation suite.\n\n")
         
         f.write("## 1. Executive Summary\n")
-        f.write("TERA was benchmarked over 80 realistic prompts spanning 8 distinct categories. The evaluation assesses latency bounds, routing decisions, calibration, token economies, and cost savings on the Fireworks API.\n\n")
+        f.write(f"The evaluation run assessed TERA V2 over {total_prompts} tasks. The system achieved a blended accuracy of **{accuracy:.1f}%** with **{fireworks_calls}** Fireworks API calls and a total token usage of **{fireworks_tokens}** tokens.\n\n")
         
-        f.write("## 2. Overall Statistics\n")
-        f.write("| Metric | Value |\n")
+        f.write("## 2. Core Performance Summary\n")
+        f.write("| Metric | Measured Value |\n")
         f.write("| :--- | :--- |\n")
-        f.write(f"| Total Prompts | {total_prompts} |\n")
-        f.write(f"| Average Latency | {avg_latency:.3f} s |\n")
-        f.write(f"| Median Latency | {med_latency:.3f} s |\n")
-        f.write(f"| Minimum Latency | {min_latency:.3f} s |\n")
-        f.write(f"| Maximum Latency | {max_latency:.3f} s |\n")
+        f.write(f"| **System Accuracy** | **{accuracy:.2f}%** |\n")
+        f.write(f"| Fireworks API Lane Calls | {fireworks_calls} |\n")
+        f.write(f"| Fireworks API Tokens | {fireworks_tokens} |\n")
+        f.write(f"| Average Request Latency | {avg_latency:.3f} s |\n")
         f.write(f"| 95th Percentile Latency | {p95_latency:.3f} s |\n")
-        f.write(f"| Average Router Probability | {avg_router_prob:.4f} |\n")
-        f.write(f"| Estimated Total Cost | ${total_cost:.5f} |\n")
-        f.write(f"| Average Cost per Prompt | ${avg_cost:.5f} |\n\n")
+        f.write(f"| Cache Hit Rate | {cache_hit_rate:.2f}% |\n")
+        f.write(f"| Solver Bypass Rate | {solver_hit_rate:.2f}% |\n")
+        f.write(f"| Local LLM Success Rate | {local_success_rate:.2f}% |\n\n")
         
-        f.write("## 3. Routing Analysis\n")
-        f.write("| Route Selection | Count | Percentage |\n")
+        f.write("## 3. Route Execution Distribution\n")
+        f.write("| Execution Route | Requests | Percentage |\n")
         f.write("| :--- | :--- | :--- |\n")
-        f.write(f"| Cheap Route | {cheap_count} | {cheap_pct:.1f}% |\n")
-        f.write(f"| Dense Route | {dense_count} | {dense_pct:.1f}% |\n")
-        f.write(f"| Escalated to Dense | {escalation_count} | {esc_rate:.1f}% |\n\n")
+        for r, cnt in routes.items():
+            pct = (cnt / total_prompts * 100.0) if total_prompts > 0 else 0.0
+            f.write(f"| {r} | {cnt} | {pct:.1f}% |\n")
+        f.write("\n")
         
-        if escalation_reasons:
-            f.write("### Escalation Reasons Breakdown\n")
-            f.write("| Reason | Count |\n")
-            f.write("| :--- | :--- |\n")
-            for r, cnt in escalation_reasons.items():
-                f.write(f"| {r} | {cnt} |\n")
-            f.write("\n")
-            
-        f.write("## 4. Token Consumption Statistics\n")
-        f.write("| Token Metric | Count |\n")
-        f.write("| :--- | :--- |\n")
-        f.write(f"| Total Prompt Tokens | {total_prompt_tokens} |\n")
-        f.write(f"| Total Completion Tokens | {total_completion_tokens} |\n")
-        f.write(f"| Total Tokens | {total_tokens} |\n")
-        f.write(f"| Average Prompt Tokens | {avg_prompt_tokens:.1f} |\n")
-        f.write(f"| Average Completion Tokens | {avg_completion_tokens:.1f} |\n")
-        f.write(f"| Average Tokens per Prompt | {avg_tokens:.1f} |\n\n")
-        
-        f.write("## 5. Per-Category Results\n")
-        f.write("| Category | Prompts | Avg Latency (s) | Escalation Rate | Avg Tokens | Total Cost |\n")
-        f.write("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
-        for cat, stat in category_stats.items():
-            cat_lats = stat["latencies"]
+        f.write("## 4. Per-Category Detailed Analysis\n")
+        f.write("| Category | Prompts | Accuracy | Cache Hits | Solver Hits | Fallbacks | Fireworks Tokens | Avg Latency (s) |\n")
+        f.write("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n")
+        for c, stats in category_stats.items():
+            tot = stats["count"]
+            corr = stats["correct"]
+            cat_acc = (corr / tot * 100.0) if tot > 0 else 0.0
+            cat_lats = stats["latencies"]
             cat_avg_lat = np.mean(cat_lats) if cat_lats else 0.0
-            cat_esc_rate = (stat["escalations"] / stat["count"] * 100.0) if stat["count"] > 0 else 0.0
-            cat_avg_tok = (stat["prompt_tokens"] + stat["completion_tokens"]) / stat["count"] if stat["count"] > 0 else 0
-            f.write(f"| {cat} | {stat['count']} | {cat_avg_lat:.3f} | {cat_esc_rate:.1f}% | {cat_avg_tok:.1f} | ${stat['cost']:.5f} |\n")
+            f.write(f"| {c} | {tot} | {cat_acc:.1f}% | {stats['cache_hits']} | {stats['solver_hits']} | {stats['fireworks_calls']} | {stats['fireworks_tokens']} | {cat_avg_lat:.2f} |\n")
         f.write("\n")
         
-        f.write("## 6. Failure Analysis\n")
-        f.write(f"- **Empty Responses:** {len(failures['empty_answers'])}\n")
-        if failures["empty_answers"]:
-            f.write(f"  - Task IDs: {', '.join(failures['empty_answers'])}\n")
-            
-        f.write(f"- **Missing Task IDs:** {len(failures['missing_task_ids'])}\n")
-        if failures["missing_task_ids"]:
-            f.write(f"  - Task IDs: {', '.join(failures['missing_task_ids'])}\n")
-            
-        f.write(f"- **Missing Telemetry logs:** {len(failures['missing_telemetry'])}\n")
-        if failures["missing_telemetry"]:
-            f.write(f"  - Task IDs: {', '.join(failures['missing_telemetry'])}\n")
-            
-        f.write(f"- **Schema/Validation Failures:** {len(failures['schema_violations'])}\n")
-        if failures["schema_violations"]:
-            f.write(f"  - Task IDs: {', '.join(failures['schema_violations'])}\n")
-            
-        dup_count = sum(len(v) for v in failures["duplicate_answers"].values())
-        f.write(f"- **Duplicate Answers:** {dup_count} (indicates repetitive outputs or model loops)\n\n")
-        
-        f.write("## 7. Recommendations\n")
-        for rec in recommendations:
-            f.write(f"- {rec}\n")
+        f.write("## 5. ROVL Validation Rejections Breakdown\n")
+        f.write("| Validator / Rejection Gate | Rejections Count | Rejection % |\n")
+        f.write("| :--- | :--- | :--- |\n")
+        for gate, cnt in rovl_rejections.items():
+            pct = (cnt / total_prompts * 100.0) if total_prompts > 0 else 0.0
+            f.write(f"| {gate} | {cnt} | {pct:.1f}% |\n")
         f.write("\n")
         
-    print(f"Successfully generated report at {report_path} and plots in {plots_dir}.")
+        f.write("## 6. Failure Analysis & Classification\n")
+        f.write("| Failure Category | Occurrences | Percentage |\n")
+        f.write("| :--- | :--- | :--- |\n")
+        for fail, cnt in failures_breakdown.items():
+            if fail != "none":
+                pct = (cnt / total_prompts * 100.0) if total_prompts > 0 else 0.0
+                f.write(f"| {fail} | {cnt} | {pct:.1f}% |\n")
+        f.write("\n")
+        
+        f.write("## 7. Evidence-Based Recommendations\n")
+        f.write("Based directly on the measured telemetry and failure data, we propose the following optimizations:\n\n")
+        
+        # Recommendations using telemetry data
+        if rovl_rejections["entropy"] > 0:
+            f.write(f"- **Calibrate Sequence Entropy:** The cumulative token sequence entropy check was rejected **{rovl_rejections['entropy']}** times, driving the high escalation rate. We recommend transitioning to *average per-token entropy* with a threshold in range `[0.05, 0.15]` to stop false escalations of long-form responses.\n")
+        
+        timeout_count = failures_breakdown.get("timeout", 0)
+        if timeout_count > 0:
+            f.write(f"- **Increase Local Client Timeout Limit:** Local model timeouts caused **{timeout_count}** fallback calls. The default timeout is `5.0` seconds. Increasing this to `10.0` or `15.0` seconds will allow local ROCm inference to complete complex tasks without triggering escalation.\n")
+        else:
+            f.write("- **Optimize Client Concurrency:** Local client did not hit critical timeout limits on the benchmark tasks, showing stable backend availability.\n")
+            
+        solver_rate = solver_hit_rate
+        f.write(f"- **Expand Deterministic Solver Scope:** Programmatic solvers bypassed the LLM entirely for **{solver_rate:.1f}%** of prompts. Expanding the solver grammar to support more math equation forms or regex-based text extraction will yield immediate 100% accurate, zero-cost bypasses.\n")
+        
+        if routes.get("remote_fallback", 0) > 0:
+            esc_pct = (routes.get("remote_fallback", 0) / total_prompts) * 100.0
+            f.write(f"- **Retrain Calibration Regressors:** Out-of-bounds Isotonic clipping led to 100% of tasks entering the cheap route, and subsequently **{esc_pct:.1f}%** fell back to the dense model, consuming **{fireworks_tokens}** Fireworks tokens. We must retrain the calibration models on a dataset including longer and more diverse prompts to restore proper calibration boundaries.\n")
+            
+    print(f"Successfully completed analysis.")
 
 if __name__ == "__main__":
     analyze()

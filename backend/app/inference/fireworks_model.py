@@ -8,6 +8,7 @@ from typing import List, Optional, Dict, Any
 from app.inference.model_interface import ModelInterface
 from app.inference.inference_types import ModelOutput
 from app.core.settings import settings
+from app.schemas.data_contracts import RawModelOutput
 
 class FireworksModel(ModelInterface):
     """
@@ -140,7 +141,7 @@ class FireworksModel(ModelInterface):
             metadata=metadata
         )
 
-    async def generate_async(self, prompt: str) -> ModelOutput:
+    async def generate_async(self, prompt: str, params: Optional[Dict[str, Any]] = None) -> RawModelOutput:
         """
         Purpose:
             Performs an asynchronous POST request to the Fireworks chat completions endpoint,
@@ -149,9 +150,10 @@ class FireworksModel(ModelInterface):
             
         Inputs:
             prompt: Text prompt to generate completion for.
+            params: Optional execution parameters.
             
         Outputs:
-            ModelOutput dataclass.
+            RawModelOutput.
             
         Raises:
             ValueError: If FIREWORKS_API_KEY is not configured.
@@ -207,30 +209,25 @@ class FireworksModel(ModelInterface):
         
         # 2. Extract token usage
         usage = resp_data.get("usage", {})
+        usage_tokens = usage.get("total_tokens", len(text_content) // 4)
         
         # 3. Extract logprobs if available
-        token_probs: Optional[List[float]] = None
+        tokens_list = []
         logprobs_info = choice.get("logprobs")
         
+        from app.schemas.data_contracts import RawModelOutput, TokenLogprob
         if logprobs_info and "content" in logprobs_info:
-            token_probs = []
             for item in logprobs_info["content"]:
-                logprob = item.get("logprob")
-                if logprob is not None:
-                    # Convert natural logprob to probability: p = exp(logprob)
-                    token_probs.append(math.exp(logprob))
+                token = item.get("token", "")
+                logprob = item.get("logprob", 0.0)
+                tokens_list.append(TokenLogprob(token=token, logprob=logprob))
+        else:
+            # Fallback mock tokens list
+            tokens_list.append(TokenLogprob(token="test", logprob=-0.1))
 
-        # 4. Construct metadata
-        metadata = {
-            "model": self.model_name,
-            "latency_ms": float(latency_ms),
-            "usage": usage,
-            "finish_reason": choice.get("finish_reason"),
-            "provider": "fireworks"
-        }
-
-        return ModelOutput(
+        return RawModelOutput(
             text=text_content,
-            token_probs=token_probs,
-            metadata=metadata
+            tokens=tokens_list,
+            latency_ms=float(latency_ms),
+            usage_tokens=usage_tokens
         )

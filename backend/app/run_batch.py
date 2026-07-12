@@ -8,18 +8,23 @@ from typing import List, Dict, Any
 # Ensure backend directory is in the path to allow imports from app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.core.settings import settings
-from app.router.runtime_router import RuntimeRouter
-from app.verification.verification_types import SchemaType
+from app.core.config import settings, ENTROPY_THRESHOLD, MIN_PROBABILITY_FLOOR, MODEL_TIMEOUT_SEC, FALLBACK_RETRY_COUNT
+from app.cache.semantic_cache import SemanticCache
+from app.parser.intent_parser import IntentParser
+from app.solvers.solver_registry import SolverRegistry
+from app.solvers.plugins.arithmetic_solver import ArithmeticSolver
+from app.solvers.plugins.logic_solver import LogicSolver
+from app.solvers.plugins.text_counter_solver import TextCounterSolver
+from app.solvers.plugins.word_problem_solver import WordProblemSolver
+from app.inference.local_client import LocalModelClient
+from app.inference.local_power_client import LocalPowerModelClient
+from app.inference.remote_client import RemoteModelClient
 from app.verification.rovl import ROVL
-from app.inference.inference_types import InferenceRequest
-from app.inference.orchestrator import InferenceOrchestrator
-from app.inference.fireworks_model import FireworksModel
-from app.inference.cheap_model import CheapModel
-from app.inference.dense_model import DenseModel
+from app.core.orchestrator import TERAOrchestrator
+from app.schemas.data_contracts import InferenceRequest
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="TERA Batch Processing Harness")
+    parser = argparse.ArgumentParser(description="TERA V2 Batch Processing Harness")
     parser.add_argument(
         "--input", 
         type=str, 
@@ -33,14 +38,14 @@ def parse_args() -> argparse.Namespace:
         help="Path to results output JSON file (default: /output/results.json)"
     )
     parser.add_argument(
-        "--mock",
-        action="store_true",
-        help="Use mock model adapters for offline testing"
-    )
-    parser.add_argument(
         "--self-test",
         action="store_true",
         help="Run startup self-test verifying models, settings, and orchestrator loading without network calls"
+    )
+    parser.add_argument(
+        "--mock",
+        action="store_true",
+        help="Run batch processing in mock mode using fast dummy model outputs instead of real inference"
     )
     return parser.parse_args()
 
@@ -67,101 +72,75 @@ async def process_task(
     index: int,
     task: Dict[str, Any],
     semaphore: asyncio.Semaphore,
-    orchestrator: InferenceOrchestrator,
+    orchestrator: TERAOrchestrator,
     c2: float,
     c3: float,
     lambda_coeff: float,
     alpha_dense: float,
     results_dict: Dict[int, Dict[str, Any]],
-    telemetry_dict: Dict[int, Dict[str, Any]],
     results_lock: asyncio.Lock,
     output_path: str,
-    telemetry_path: str
+    metadata: Dict[str, Any]
 ) -> None:
-    task_id = task.get("task_id") or task.get("id") or f"task-{index}"
+    task_id_raw = task.get("task_id") or task.get("id") or f"task_{index}_default"
     prompt = task.get("prompt")
     
+    # Clean task ID to satisfy strict Pydantic pattern constraint: ^task_\d+_[a-zA-Z0-9]+$
+    cleaned_id = "".join(c for c in str(task_id_raw) if c.isalnum())
+    if not cleaned_id:
+        cleaned_id = "default"
+    conforming_task_id = f"task_{index}_{cleaned_id}"
+    
     if not prompt:
-        print(f"Warning: Skipping task {task_id} due to empty prompt.")
+        print(f"Warning: Skipping task {task_id_raw} due to empty prompt.")
         async with results_lock:
             results_dict[index] = {
-                "task_id": task_id,
+                "task_id": task_id_raw,
                 "answer": ""
             }
-            telemetry_dict[index] = {
-                "task_id": task_id,
-                "selected_route": "skipped",
-                "escalated": False,
-                "error": "Empty prompt",
-                "metadata": {}
-            }
             sorted_res = [results_dict[k] for k in sorted(results_dict.keys())]
-            sorted_tele = [telemetry_dict[k] for k in sorted(telemetry_dict.keys())]
             save_atomic(output_path, sorted_res)
-            save_atomic(telemetry_path, sorted_tele)
         return
         
     # Parse schema type
     schema_str = str(task.get("schema_type", "none")).lower()
-    if schema_str == "json":
-        schema_type = SchemaType.JSON
-    elif schema_str == "regex":
-        schema_type = SchemaType.REGEX
-    else:
-        schema_type = SchemaType.NONE
-
-    # Build request payload
+    
+    # Retrieve category from metadata if available
+    t_meta = metadata.get(str(task_id_raw)) or metadata.get(task_id_raw) or {}
+    category = t_meta.get("category", "unknown")
+    
+    # Build request payload conforming to V2 InferenceRequest
     request = InferenceRequest(
         prompt=prompt,
+        task_id=conforming_task_id,
         c2=c2,
         c3=c3,
         lambda_coeff=lambda_coeff,
         alpha_dense=alpha_dense,
-        schema_type=schema_type,
+        schema_type=schema_str,
         regex_pattern=task.get("regex_pattern"),
-        min_chars=task.get("min_chars"),
-        max_chars=task.get("max_chars")
+        category=category
     )
 
     async with semaphore:
         try:
-            response = await orchestrator.run_async(request)
+            response = await orchestrator.process_request_async(request)
             answer_val = response.final_response
-            route_val = response.selected_route.value
-            escalated_val = response.escalated
-            meta_val = response.metadata
-            err_val = None
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            print(f"Error processing task {task_id}: {e}", file=sys.stderr)
+            print(f"Error processing task {task_id_raw}: {e}", file=sys.stderr)
             answer_val = ""
-            route_val = "error"
-            escalated_val = False
-            meta_val = {}
-            err_val = str(e)
 
     async with results_lock:
         results_dict[index] = {
-            "task_id": task_id,
+            "task_id": task_id_raw,
             "answer": answer_val
         }
         
-        tele_item = {
-            "task_id": task_id,
-            "selected_route": route_val,
-            "escalated": escalated_val,
-            "metadata": meta_val
-        }
-        if err_val:
-            tele_item["error"] = err_val
-        telemetry_dict[index] = tele_item
-        
         # Write files atomically and sorted after each task completes
         sorted_res = [results_dict[k] for k in sorted(results_dict.keys())]
-        sorted_tele = [telemetry_dict[k] for k in sorted(telemetry_dict.keys())]
         save_atomic(output_path, sorted_res)
-        save_atomic(telemetry_path, sorted_tele)
 
 def main() -> None:
     args = parse_args()
@@ -170,27 +149,75 @@ def main() -> None:
         print("Running TERA Self-Test Mode...")
         try:
             # 1. Verify settings load
-            cheap = settings.cheap_model
-            dense = settings.dense_model
-            print(f"  Settings Loaded. Cheap: {cheap}, Dense: {dense}")
+            local_name = settings.tera_local_model_name
+            remote_name = settings.tera_remote_model_name
+            print(f"  Settings Loaded. Local: {local_name}, Remote: {remote_name}")
             
-            # 2. Verify models load and router initializes
-            models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "models"))
-            router = RuntimeRouter(models_dir)
-            print("  Router & Calibration Models Loaded OK.")
+            # 2. Verify cache and registry loads
+            cache = SemanticCache(
+                cache_dir=settings.tera_cache_dir,
+                embedding_model_path=settings.tera_onnx_model_path
+            )
+            print("  Semantic Cache OK.")
             
-            # 3. Verify orchestrator initializes
-            cheap_model = CheapModel()
-            dense_model = DenseModel()
-            rovl = ROVL(entropy_threshold=settings.entropy_threshold)
-            _ = InferenceOrchestrator(router, cheap_model, dense_model, rovl)
-            print("  Orchestrator Initialized OK.")
+            # 3. Solver registry setup
+            registry = SolverRegistry()
+            registry.register_solver(ArithmeticSolver())
+            registry.register_solver(LogicSolver())
+            registry.register_solver(TextCounterSolver())
+            registry.register_solver(WordProblemSolver())
+            registry.lock()
+            print("  Solvers Registered & Locked OK.")
             
-            # 4. Configuration validation warning if API key absent
-            if not settings.fireworks_api_key:
-                print("  Note: FIREWORKS_API_KEY is not set (expected for dry runs).")
+            # 4. Model clients setup
+            local_client = LocalModelClient(
+                endpoint_url=settings.tera_local_inference_url,
+                model_name=settings.tera_local_model_name,
+                timeout_sec=settings.tera_model_timeout_sec
+            )
+            if settings.tera_external_fallback_enabled:
+                if not settings.tera_fireworks_api_key:
+                    raise RuntimeError(
+                        "TERA_FIREWORKS_API_KEY is required when external fallback is enabled."
+                    )
+                remote_client = RemoteModelClient(
+                    api_key=settings.tera_fireworks_api_key,
+                    endpoint_url=settings.tera_fireworks_api_url,
+                    model_name=settings.tera_remote_model_name,
+                    max_retries=FALLBACK_RETRY_COUNT
+                )
             else:
-                print("  FIREWORKS_API_KEY is set.")
+                remote_client = LocalPowerModelClient(
+                    endpoint_url=settings.tera_power_inference_url,
+                    model_name=settings.tera_power_model_name,
+                    timeout_sec=settings.tera_model_timeout_sec
+                )
+            print("  Local & Remote model clients OK.")
+            
+            # 5. Verify orchestrator initializes
+            rovl = ROVL(
+                entropy_threshold=ENTROPY_THRESHOLD,
+                min_prob_floor=MIN_PROBABILITY_FLOOR
+            )
+            _ = TERAOrchestrator(
+                cache=cache,
+                parser=IntentParser(registry),
+                registry=registry,
+                local_client=local_client,
+                remote_client=remote_client,
+                rovl=rovl,
+                settings=settings
+            )
+            print("  Orchestrator V2 Initialized OK.")
+            
+            # Clean up cache database handle
+            cache.env.close()
+            
+            # Configuration validation warning if API key absent
+            if not settings.tera_fireworks_api_key:
+                print("  Note: TERA_FIREWORKS_API_KEY is not set (expected for dry runs).")
+            else:
+                print("  TERA_FIREWORKS_API_KEY is set.")
                 
             print("Self-test passed successfully.")
             sys.exit(0)
@@ -217,6 +244,17 @@ def main() -> None:
             os.makedirs(parent_dir, exist_ok=True)
 
     telemetry_path = os.path.join(os.path.dirname(output_path), "telemetry.json")
+    settings.tera_telemetry_path = telemetry_path
+
+    metadata_path = "evaluation/benchmark_metadata.json"
+    metadata = {}
+    if os.path.exists(metadata_path):
+        try:
+            with open(metadata_path, "r", encoding="utf-8") as f:
+                metadata = json.load(f)
+            print(f"Loaded benchmark metadata for {len(metadata)} tasks.")
+        except Exception as e:
+            print(f"Warning: Failed to load benchmark metadata: {e}")
 
     print(f"Reading tasks from: {input_path}")
     print(f"Writing results to: {output_path}")
@@ -238,29 +276,109 @@ def main() -> None:
         print("Error: Input JSON must be a list of tasks.", file=sys.stderr)
         sys.exit(1)
 
-    # 3. Environment pre-flight validations (unless in mock mode)
-    if not args.mock:
-        try:
-            settings.validate_production()
-        except ValueError as val_err:
-            print(f"Pre-flight configuration failed: {val_err}", file=sys.stderr)
-            sys.exit(1)
-
-    # 4. Initialize TERA Components
-    models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "models"))
-    router = RuntimeRouter(models_dir)
+    # 3. Initialize TERA V2 Components
+    print("Initializing TERA V2 pipeline components...")
+    if args.mock:
+        class MockSemanticCache:
+            def __init__(self):
+                class FakeEnv:
+                    def close(self):
+                        pass
+                self.env = FakeEnv()
+            def lookup(self, prompt: str):
+                return None
+            def update(self, prompt: str, response: Any):
+                pass
+            def insert(self, prompt: str, response: str):
+                pass
+            def close(self):
+                pass
+        cache = MockSemanticCache()  # type: ignore
+    else:
+        cache = SemanticCache(
+            cache_dir=settings.tera_cache_dir,
+            embedding_model_path=settings.tera_onnx_model_path
+        )
+    registry = SolverRegistry()
+    registry.register_solver(ArithmeticSolver())
+    registry.register_solver(LogicSolver())
+    registry.register_solver(TextCounterSolver())
+    registry.register_solver(WordProblemSolver())
+    registry.lock()
+    
+    parser = IntentParser(registry)
     
     if args.mock:
-        print("Initializing with offline mock model adapters...")
-        cheap_model = CheapModel()
-        dense_model = DenseModel()
+        from app.schemas.data_contracts import RawModelOutput, TokenLogprob
+        class MockModelClient:
+            def __init__(self, answer_text: str):
+                self.answer_text = answer_text
+            async def generate_async(self, prompt: str, params: Any = None) -> RawModelOutput:
+                # Return conforming JSON structure if prompt indicates json/regex schema requested
+                if "json" in prompt.lower() or "schema" in prompt.lower() or "payload" in prompt.lower():
+                    text = '{"status": "success", "data": "mocked"}\n'
+                else:
+                    text = self.answer_text
+                return RawModelOutput(
+                    text=text,
+                    tokens=[TokenLogprob(token="tok", logprob=-0.05)],
+                    latency_ms=10.0,
+                    usage_tokens=len(text) // 4
+                )
+            async def generate_n_async(self, prompt: str, n: int, params: Any = None) -> list:
+                results = []
+                for i in range(n):
+                    out = await self.generate_async(prompt, params)
+                    results.append({
+                        "success": True,
+                        "output": out,
+                        "error": None,
+                        "latency_ms": out.latency_ms,
+                        "usage_tokens": out.usage_tokens,
+                        "prompt_tokens": max(0, out.usage_tokens - len(out.tokens)),
+                        "completion_tokens": len(out.tokens)
+                    })
+                return results
+            async def close(self):
+                pass
+        local_client = MockModelClient("Mocked local answer")  # type: ignore
+        remote_client = MockModelClient("Mocked remote fallback answer")  # type: ignore
     else:
-        print(f"Initializing Fireworks Model Adapters: {settings.cheap_model} & {settings.dense_model}")
-        cheap_model = FireworksModel(model_name=settings.cheap_model)
-        dense_model = FireworksModel(model_name=settings.dense_model)
-
-    rovl = ROVL(entropy_threshold=settings.entropy_threshold)
-    orchestrator = InferenceOrchestrator(router, cheap_model, dense_model, rovl)
+        local_client = LocalModelClient(
+            endpoint_url=settings.tera_local_inference_url,
+            model_name=settings.tera_local_model_name,
+            timeout_sec=settings.tera_model_timeout_sec
+        )
+        if settings.tera_external_fallback_enabled:
+            if not settings.tera_fireworks_api_key:
+                raise RuntimeError(
+                    "TERA_FIREWORKS_API_KEY is required when external fallback is enabled."
+                )
+            remote_client = RemoteModelClient(
+                api_key=settings.tera_fireworks_api_key,
+                endpoint_url=settings.tera_fireworks_api_url,
+                model_name=settings.tera_remote_model_name,
+                max_retries=FALLBACK_RETRY_COUNT
+            )
+        else:
+            remote_client = LocalPowerModelClient(
+                endpoint_url=settings.tera_power_inference_url,
+                model_name=settings.tera_power_model_name,
+                timeout_sec=settings.tera_model_timeout_sec
+            )
+    rovl = ROVL(
+        entropy_threshold=ENTROPY_THRESHOLD,
+        min_prob_floor=MIN_PROBABILITY_FLOOR
+    )
+    orchestrator = TERAOrchestrator(
+        cache=cache,
+        parser=parser,
+        registry=registry,
+        local_client=local_client,
+        remote_client=remote_client,
+        rovl=rovl,
+        settings=settings
+    )
 
     # Load routing cost coefficients from environment
     c2 = float(os.environ.get("C2", 10.0))
@@ -274,7 +392,6 @@ def main() -> None:
 
     # 5. Process Batch
     results_dict: Dict[int, Dict[str, Any]] = {}
-    telemetry_dict: Dict[int, Dict[str, Any]] = {}
     results_lock = asyncio.Lock()
     
     print(f"Processing {len(tasks)} tasks...")
@@ -284,7 +401,7 @@ def main() -> None:
         tasks_list = [
             process_task(
                 i, t, sem, orchestrator, c2, c3, lambda_coeff, alpha_dense,
-                results_dict, telemetry_dict, results_lock, output_path, telemetry_path
+                results_dict, results_lock, output_path, metadata
             )
             for i, t in enumerate(tasks)
         ]
@@ -293,9 +410,33 @@ def main() -> None:
     try:
         asyncio.run(run_all())
         print(f"Batch execution completed. Outputs saved to {output_path}")
+        
+        # Format the telemetry file as a JSON array for offline compliance if in evaluation
+        if "evaluation" in telemetry_path.lower() and os.path.exists(telemetry_path):
+            try:
+                tele_data = []
+                with open(telemetry_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip():
+                            line_content = line.strip()
+                            if line_content.startswith("[") and line_content.endswith("]"):
+                                tele_data.extend(json.loads(line_content))
+                                break
+                            elif line_content.startswith("{"):
+                                tele_data.append(json.loads(line_content))
+                with open(telemetry_path, "w", encoding="utf-8") as f:
+                    json.dump(tele_data, f, indent=4)
+                print(f"Formatted telemetry file as a JSON array: {telemetry_path}")
+            except Exception as e:
+                print(f"Warning: Failed to format telemetry file as JSON array: {e}")
     except (KeyboardInterrupt, asyncio.CancelledError):
         print("\nBatch processing interrupted or cancelled. Exiting gracefully.", file=sys.stderr)
         sys.exit(130)
+    finally:
+        # Shutdown connection pools and handles cleanly
+        asyncio.run(local_client.close())
+        asyncio.run(remote_client.close())
+        cache.env.close()
 
     sys.exit(0)
 

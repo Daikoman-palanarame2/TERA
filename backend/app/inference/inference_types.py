@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Any
 from app.router.route_types import RouteOption, RoutingDecision
 from app.verification.verification_types import SchemaType, VerificationResult
 
@@ -34,7 +34,7 @@ class ModelOutput:
     """
     text: str
     token_probs: Optional[List[float]] = None
-    metadata: Optional[dict] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 @dataclass(frozen=True)
@@ -49,4 +49,4 @@ class InferenceResponse:
     routing_decision: RoutingDecision
     verification_result: Optional[VerificationResult]
     escalated: bool
-    metadata: Optional[dict] = None
+    metadata: Optional[dict[str, Any]] = None
