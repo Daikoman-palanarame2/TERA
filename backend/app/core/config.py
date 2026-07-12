@@ -8,7 +8,11 @@ Purpose:
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from dotenv import load_dotenv
 from app.core.exceptions import ConfigurationError
+
+# Load environment variables from .env if present
+load_dotenv()
 
 # Frozen operational constants retained for the runtime modules that implement
 # the V2 pipeline beneath the V3 interfaces.
@@ -44,12 +48,19 @@ class RuntimeSettings:
         self.tera_power_model_name = os.getenv(
             "TERA_POWER_MODEL_NAME", "Qwen/Qwen2.5-14B-Instruct"
         )
-        self.tera_fireworks_api_key = os.getenv("TERA_FIREWORKS_API_KEY")
-        self.tera_fireworks_api_url = os.getenv(
-            "TERA_FIREWORKS_API_URL", "https://api.fireworks.ai/v1"
+        # Canonical credential variable; accept legacy alias FIREWORKS_API_KEY for
+        # competition environments that inject the older name. Never log or print.
+        self.tera_fireworks_api_key = (
+            os.getenv("TERA_FIREWORKS_API_KEY")
+            or os.getenv("FIREWORKS_API_KEY")
+        ) or None
+        self.tera_fireworks_api_url = (
+            os.getenv("TERA_FIREWORKS_API_URL")
+            or os.getenv("FIREWORKS_BASE_URL")
+            or "https://api.fireworks.ai/v1"
         )
         self.tera_remote_model_name = os.getenv(
-            "TERA_REMOTE_MODEL_NAME", "accounts/fireworks/models/deepseek-v3"
+            "TERA_REMOTE_MODEL_NAME", "accounts/fireworks/models/gpt-oss-120b"
         )
         self.tera_external_fallback_enabled = os.getenv(
             "TERA_EXTERNAL_FALLBACK_ENABLED", "false"

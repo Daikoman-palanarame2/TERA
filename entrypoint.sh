@@ -48,10 +48,14 @@ fi
 if [ "$SELF_TEST" = "true" ]; then
   FIREWORKS_CONFIG_OK="SKIP"
 else
-  if [ -n "$FIREWORKS_API_KEY" ] && [ -n "$FIREWORKS_BASE_URL" ]; then
+  # Accept canonical TERA_FIREWORKS_API_KEY or legacy alias FIREWORKS_API_KEY.
+  # Accept canonical TERA_FIREWORKS_API_URL or legacy alias FIREWORKS_BASE_URL.
+  _fw_key="${TERA_FIREWORKS_API_KEY:-${FIREWORKS_API_KEY:-}}"
+  _fw_url="${TERA_FIREWORKS_API_URL:-${FIREWORKS_BASE_URL:-}}"
+  if [ -n "$_fw_key" ] && [ -n "$_fw_url" ]; then
     FIREWORKS_CONFIG_OK="OK"
   else
-    echo "Error: FIREWORKS_API_KEY or FIREWORKS_BASE_URL environment variables are not set!"
+    echo "Error: Fireworks credentials not set. Provide TERA_FIREWORKS_API_KEY (or FIREWORKS_API_KEY) and TERA_FIREWORKS_API_URL (or FIREWORKS_BASE_URL)."
     VALIDATION_FAILED=true
   fi
 fi

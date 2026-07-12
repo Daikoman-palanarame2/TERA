@@ -19,9 +19,42 @@ from app.solvers.plugins.word_problem_solver import WordProblemSolver
 from app.inference.local_client import LocalModelClient
 from app.inference.local_power_client import LocalPowerModelClient
 from app.inference.remote_client import RemoteModelClient
+from app.core.exceptions import InferenceTimeoutError
 from app.verification.rovl import ROVL
 from app.core.orchestrator import TERAOrchestrator
 from app.schemas.data_contracts import InferenceRequest
+
+
+class NullModelClient:
+    """Emergency-mode local-client stub.
+
+    Raises InferenceTimeoutError immediately so the orchestrator's fallback
+    path activates without making any HTTP call to localhost.
+    """
+
+    tier = None  # not local_power; triggers remote_fallback telemetry label
+
+    async def generate_async(self, prompt: str, params=None):
+        raise InferenceTimeoutError(
+            "NullModelClient: local model not available in emergency external mode."
+        )
+
+    async def generate_n_async(self, prompt: str, n: int, params=None) -> list:
+        results = []
+        for _ in range(n):
+            results.append({
+                "success": False,
+                "output": None,
+                "error": "NullModelClient: local model not available in emergency external mode.",
+                "latency_ms": 0.0,
+                "usage_tokens": 0,
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+            })
+        return results
+
+    async def close(self):
+        pass
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="TERA V2 Batch Processing Harness")
@@ -178,7 +211,8 @@ def main() -> None:
             if settings.tera_external_fallback_enabled:
                 if not settings.tera_fireworks_api_key:
                     raise RuntimeError(
-                        "TERA_FIREWORKS_API_KEY is required when external fallback is enabled."
+                        "A Fireworks API key is required when external fallback is enabled. "
+                        "Set TERA_FIREWORKS_API_KEY or the legacy alias FIREWORKS_API_KEY."
                     )
                 remote_client = RemoteModelClient(
                     api_key=settings.tera_fireworks_api_key,
@@ -215,9 +249,9 @@ def main() -> None:
             
             # Configuration validation warning if API key absent
             if not settings.tera_fireworks_api_key:
-                print("  Note: TERA_FIREWORKS_API_KEY is not set (expected for dry runs).")
+                print("  Note: Fireworks API key not set (TERA_FIREWORKS_API_KEY / FIREWORKS_API_KEY). Expected for dry runs.")
             else:
-                print("  TERA_FIREWORKS_API_KEY is set.")
+                print("  Fireworks API key present (TERA_FIREWORKS_API_KEY or FIREWORKS_API_KEY alias).")
                 
             print("Self-test passed successfully.")
             sys.exit(0)
@@ -245,6 +279,13 @@ def main() -> None:
 
     telemetry_path = os.path.join(os.path.dirname(output_path), "telemetry.json")
     settings.tera_telemetry_path = telemetry_path
+
+    # Truncate existing telemetry file to ensure a clean run
+    if os.path.exists(telemetry_path):
+        try:
+            os.remove(telemetry_path)
+        except Exception:
+            pass
 
     metadata_path = "evaluation/benchmark_metadata.json"
     metadata = {}
@@ -342,25 +383,35 @@ def main() -> None:
             async def close(self):
                 pass
         local_client = MockModelClient("Mocked local answer")  # type: ignore
-        remote_client = MockModelClient("Mocked remote fallback answer")  # type: ignore
+        # Give the mock power client the local_power tier so telemetry is consistent
+        mock_remote = MockModelClient("Mocked remote fallback answer")  # type: ignore
+        mock_remote.tier = "local_power"  # type: ignore
+        remote_client = mock_remote
     else:
-        local_client = LocalModelClient(
-            endpoint_url=settings.tera_local_inference_url,
-            model_name=settings.tera_local_model_name,
-            timeout_sec=settings.tera_model_timeout_sec
-        )
         if settings.tera_external_fallback_enabled:
+            # --- Emergency external mode ---
+            # Do not create LocalModelClient; use NullModelClient so the orchestrator's
+            # cascade will immediately escalate every non-deterministic task to Fireworks.
             if not settings.tera_fireworks_api_key:
                 raise RuntimeError(
-                    "TERA_FIREWORKS_API_KEY is required when external fallback is enabled."
+                    "A Fireworks API key is required when external fallback is enabled. "
+                    "Set TERA_FIREWORKS_API_KEY or the legacy alias FIREWORKS_API_KEY."
                 )
+            local_client = NullModelClient()  # type: ignore
             remote_client = RemoteModelClient(
                 api_key=settings.tera_fireworks_api_key,
                 endpoint_url=settings.tera_fireworks_api_url,
                 model_name=settings.tera_remote_model_name,
                 max_retries=FALLBACK_RETRY_COUNT
             )
+            print(f"Emergency external mode: routing non-deterministic tasks to Fireworks model '{settings.tera_remote_model_name}'.")
         else:
+            # --- Normal local mode ---
+            local_client = LocalModelClient(
+                endpoint_url=settings.tera_local_inference_url,
+                model_name=settings.tera_local_model_name,
+                timeout_sec=settings.tera_model_timeout_sec
+            )
             remote_client = LocalPowerModelClient(
                 endpoint_url=settings.tera_power_inference_url,
                 model_name=settings.tera_power_model_name,
@@ -405,7 +456,11 @@ def main() -> None:
             )
             for i, t in enumerate(tasks)
         ]
-        await asyncio.gather(*tasks_list)
+        try:
+            await asyncio.gather(*tasks_list)
+        finally:
+            await local_client.close()
+            await remote_client.close()
 
     try:
         asyncio.run(run_all())
@@ -414,16 +469,15 @@ def main() -> None:
         # Format the telemetry file as a JSON array for offline compliance if in evaluation
         if "evaluation" in telemetry_path.lower() and os.path.exists(telemetry_path):
             try:
-                tele_data = []
                 with open(telemetry_path, "r", encoding="utf-8") as f:
-                    for line in f:
+                    content = f.read().strip()
+                if content.startswith("["):
+                    tele_data = json.loads(content)
+                else:
+                    tele_data = []
+                    for line in content.splitlines():
                         if line.strip():
-                            line_content = line.strip()
-                            if line_content.startswith("[") and line_content.endswith("]"):
-                                tele_data.extend(json.loads(line_content))
-                                break
-                            elif line_content.startswith("{"):
-                                tele_data.append(json.loads(line_content))
+                            tele_data.append(json.loads(line.strip()))
                 with open(telemetry_path, "w", encoding="utf-8") as f:
                     json.dump(tele_data, f, indent=4)
                 print(f"Formatted telemetry file as a JSON array: {telemetry_path}")
@@ -433,9 +487,7 @@ def main() -> None:
         print("\nBatch processing interrupted or cancelled. Exiting gracefully.", file=sys.stderr)
         sys.exit(130)
     finally:
-        # Shutdown connection pools and handles cleanly
-        asyncio.run(local_client.close())
-        asyncio.run(remote_client.close())
+        # Shutdown cache db handles cleanly
         cache.env.close()
 
     sys.exit(0)

@@ -482,6 +482,13 @@ class TERAOrchestrator:
     async def _run_cascade_routing_async(self, request: InferenceRequest, state: RequestState) -> Optional[InferenceResponse]:
         # 1. Difficulty Classification
         difficulty_tier = self.classifier.classify(request.prompt)
+
+        # Emergency-mode override: when all inference must go to the external backend,
+        # force every non-deterministic task through the direct-power path so that
+        # NullModelClient is never called and no localhost ports are contacted.
+        if getattr(self.settings, "tera_external_fallback_enabled", False):
+            difficulty_tier = "direct_power"
+
         state.difficulty_tier = difficulty_tier
         state.routing_reasons = [f"Classified as {difficulty_tier}"]
         state.cisc_enabled = self.settings.tera_cisc_enabled
@@ -802,24 +809,127 @@ class TERAOrchestrator:
 
         return None
 
-    async def _run_power_generation(self, request: InferenceRequest, state: RequestState, prompt: str, params: dict, add_candidate_fn: callable):
+    async def _run_power_generation(
+        self,
+        request: InferenceRequest,
+        state: RequestState,
+        prompt: str,
+        params: dict,
+        add_candidate_fn: callable,
+    ):
+        """Call the power/remote client, apply format enforcement, and run one bounded
+        retry if deterministic format constraints are violated.
+
+        Maximum external calls per invocation: 2.
+        """
         local_power_fallback = getattr(self.remote_client, "tier", None) == "local_power"
         escalation_route = "local_power" if local_power_fallback else "remote_fallback"
         state.remote_fallback_triggered = not local_power_fallback
-        
+
+        format_constraints = self.output_enforcer.constraints_from_prompt(request.prompt)
+        json_schema = {} if request.schema_type == "json" else None
+        constraints = VerificationConstraints(
+            json_schema=json_schema,
+            regex_pattern=request.regex_pattern if request.schema_type == "regex" else None,
+        )
+
+        # --- First attempt ---
         power_out = await self.remote_client.generate_async(prompt, params)
         state.fireworks_tokens = 0 if local_power_fallback else power_out.usage_tokens
-        
+
         state.update_inference(
             text=power_out.text,
             tokens=power_out.tokens,
             tokens_count=power_out.usage_tokens,
             latency_ms=power_out.latency_ms,
             is_local=False,
-            external_api_calls=getattr(power_out, "external_api_calls", 0)
+            external_api_calls=getattr(power_out, "external_api_calls", 0),
         )
         state.route_taken = escalation_route
-        
+
+        format_result = self.output_enforcer.enforce(
+            power_out.text,
+            strip_json_fence=(
+                request.schema_type == "json"
+                and power_out.text.lstrip().startswith("```")
+            ),
+            **format_constraints,
+        )
+        if format_result.output != power_out.text:
+            power_out = power_out.model_copy(update={"text": format_result.output})
+
+        # --- Bounded retry: one attempt if deterministic format constraints violated ---
+        if (
+            not format_result.success
+            and format_result.failures  # at least one constraint explicitly failed
+            and getattr(self.settings, "tera_external_fallback_enabled", False)
+        ):
+            constraint_desc = "; ".join(format_result.failures)
+            retry_prompt = (
+                f"{request.prompt}\n\n"
+                f"[CORRECTION REQUIRED]\n"
+                f"Your previous response violated these format constraints: {constraint_desc}\n"
+                f"Return only the required output, strictly satisfying all constraints above."
+            )
+            _log_structured(
+                "INFO",
+                "app.core.orchestrator",
+                f"Power-tier format constraint failed ({constraint_desc}). Attempting one bounded retry.",
+                request.task_id,
+            )
+            try:
+                retry_out = await self.remote_client.generate_async(retry_prompt, params)
+                # Accumulate tokens and API call count
+                state.fireworks_tokens = (
+                    0 if local_power_fallback
+                    else state.fireworks_tokens + retry_out.usage_tokens
+                )
+                state.update_inference(
+                    text=retry_out.text,
+                    tokens=retry_out.tokens,
+                    tokens_count=state.remote_tokens_consumed + retry_out.usage_tokens,
+                    latency_ms=retry_out.latency_ms,
+                    is_local=False,
+                    external_api_calls=getattr(retry_out, "external_api_calls", 0),
+                )
+                retry_format = self.output_enforcer.enforce(
+                    retry_out.text,
+                    strip_json_fence=(
+                        request.schema_type == "json"
+                        and retry_out.text.lstrip().startswith("```")
+                    ),
+                    **format_constraints,
+                )
+                if retry_format.output != retry_out.text:
+                    retry_out = retry_out.model_copy(update={"text": retry_format.output})
+                if retry_format.success:
+                    power_out = retry_out
+                    format_result = retry_format
+                    _log_structured(
+                        "INFO",
+                        "app.core.orchestrator",
+                        "Bounded retry succeeded — format constraints satisfied.",
+                        request.task_id,
+                    )
+                else:
+                    _log_structured(
+                        "WARNING",
+                        "app.core.orchestrator",
+                        "Bounded retry did not satisfy format constraints. Using best available output.",
+                        request.task_id,
+                    )
+                    # Use the better of the two attempts
+                    if len(retry_format.failures) < len(format_result.failures):
+                        power_out = retry_out
+                        format_result = retry_format
+            except Exception as e:
+                _log_structured(
+                    "WARNING",
+                    "app.core.orchestrator",
+                    f"Bounded retry failed with exception: {e}. Using first-attempt output.",
+                    request.task_id,
+                )
+
         power_out, power_failures, power_passed = add_candidate_fn(power_out)
         return power_out, power_failures, power_passed
 

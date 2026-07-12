@@ -34,10 +34,11 @@ class TestModelDiscovery(unittest.TestCase):
         """
         Verifies that in the absence of ALLOWED_MODELS and overrides, it falls back to defaults.
         """
-        # Clear any settings cache by instantiating a clean class
-        settings = Settings()
+        # Clear any settings cache by instantiating a clean class with no allowed models string
+        settings = Settings(allowed_models_str="")
         cheap, dense, method = settings.get_resolved_models()
         
+        print(f"DEBUG: cheap={cheap}, dense={dense}, method={method}")
         self.assertEqual(cheap, "accounts/fireworks/models/deepseek-v4-pro")
         self.assertEqual(dense, "accounts/fireworks/models/gpt-oss-120b")
         self.assertEqual(method, "Fallback Defaults")

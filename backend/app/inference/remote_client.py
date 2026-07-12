@@ -17,7 +17,7 @@ from typing import Dict, Any, Optional, List
 from app.inference.model_interface import ModelInterface
 from app.schemas.data_contracts import RawModelOutput, TokenLogprob
 from app.core.exceptions import InferenceTimeoutError, ConfigurationError
-from app.core.config import MODEL_TIMEOUT_SEC
+from app.core.config import settings, MODEL_TIMEOUT_SEC
 
 # Get loggers
 logger = logging.getLogger("app.inference.remote_client")
@@ -76,7 +76,7 @@ class RemoteModelClient(ModelInterface):
         self.endpoint_url = endpoint_url
         self.model_name = model_name
         self.max_retries = max_retries
-        self.timeout_sec = MODEL_TIMEOUT_SEC  # Core network parameter: MODEL_TIMEOUT_SEC
+        self.timeout_sec = getattr(settings, "tera_model_timeout_sec", MODEL_TIMEOUT_SEC)
         # Reuse a single AsyncClient instance
         self.client = httpx.AsyncClient(timeout=self.timeout_sec)
 
