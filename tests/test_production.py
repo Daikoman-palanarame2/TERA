@@ -131,7 +131,7 @@ class TestProductionPhase1(unittest.TestCase):
                 if line.strip():
                     tele_data.append(json.loads(line))
         self.assertEqual(len(tele_data), 2)
-        self.assertEqual(tele_data[0]["task_id"], "task_0_test1")
+        self.assertEqual(tele_data[0]["task_id"], "test-1")
         self.assertIn("route_taken", tele_data[0])
 
 if __name__ == "__main__":

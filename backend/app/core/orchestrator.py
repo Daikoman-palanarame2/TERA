@@ -217,10 +217,7 @@ class TERAOrchestrator:
                         request.schema_type == "json"
                         and local_output.text.lstrip().startswith("```")
                     ),
-                    is_sentiment=(
-                        "sentiment" in request.prompt.lower()
-                        or "classify" in request.prompt.lower()
-                    ),
+                    is_sentiment=self._is_sentiment(request.prompt.lower()),
                     is_ner=self._is_ner(request.prompt.lower()),
                     **format_constraints,
                 )
@@ -498,6 +495,18 @@ class TERAOrchestrator:
             or ("extract" in prompt_lower and any(k in prompt_lower for k in ["person", "organization", "location", "date"]))
         )
 
+    @staticmethod
+    def _is_sentiment(prompt_lower: str) -> bool:
+        if "sentiment" in prompt_lower:
+            return True
+        return "classify" in prompt_lower and any(
+            marker in prompt_lower
+            for marker in (
+                "positive", "negative", "neutral", "mixed", "review",
+                "product", "shipping", "support", " but ",
+            )
+        )
+
     def _enrich_prompt(self, prompt: str, request: InferenceRequest) -> str:
         prompt_lower = prompt.lower()
         
@@ -508,7 +517,7 @@ class TERAOrchestrator:
             or " vs " in prompt_lower
             or "instead of" in prompt_lower
         )
-        is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+        is_sentiment = self._is_sentiment(prompt_lower)
         is_ner = self._is_ner(prompt_lower)
                   
         format_constraints = self.output_enforcer.constraints_from_prompt(prompt)
@@ -617,7 +626,7 @@ class TERAOrchestrator:
         def add_candidate(out: RawModelOutput):
             ver_res = self.rovl.verify(out, constraints, task_id=request.task_id)
             prompt_lower = request.prompt.lower()
-            is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+            is_sentiment = self._is_sentiment(prompt_lower)
             is_ner = self._is_ner(prompt_lower)
 
             format_result = self.output_enforcer.enforce(
@@ -941,7 +950,7 @@ class TERAOrchestrator:
         state.remote_fallback_triggered = not local_power_fallback
 
         prompt_lower = request.prompt.lower()
-        is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+        is_sentiment = self._is_sentiment(prompt_lower)
         is_ner = self._is_ner(prompt_lower)
 
         format_constraints = self.output_enforcer.constraints_from_prompt(request.prompt)

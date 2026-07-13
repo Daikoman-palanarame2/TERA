@@ -40,7 +40,7 @@ def test_ner_normalizes_institution_acronym_and_date_comma() -> None:
     )
 
     assert result.success
-    assert result.output == "July 4 2025 â€” DATE\nNUS â€” ORGANIZATION"
+    assert result.output == "July 4 2025 — DATE\nNUS — ORGANIZATION"
 
 
 def test_bullet_constraints_report_each_failure_without_truncation() -> None:
