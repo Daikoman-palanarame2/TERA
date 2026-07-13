@@ -138,6 +138,11 @@ class InferenceRequest(BaseModel):
         pattern=r"^task_\d+_[a-zA-Z0-9]+$", 
         description="Structured identifier matching task pattern: task_<index>_<hash>."
     )
+    source_task_id: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        description="Original dataset task ID used for results and telemetry joins."
+    )
     c2: float = Field(
         ..., 
         ge=0.0, 
@@ -261,5 +266,4 @@ class TelemetryLog(BaseModel):
     refinement_passed: Optional[bool] = Field(default=None, description="Whether refinement succeeded.")
     enriched_handoff_used: bool = Field(default=False, description="Whether enriched handoff was used.")
     cascade_fallback_used: bool = Field(default=False, description="Whether fallback to legacy path was activated.")
-
 

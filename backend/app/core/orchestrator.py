@@ -113,7 +113,10 @@ class TERAOrchestrator:
         Raises:
             TERABaseException: On platform execution errors.
         """
-        state = RequestState(task_id=request.task_id, prompt=request.prompt)
+        state = RequestState(
+            task_id=request.source_task_id or request.task_id,
+            prompt=request.prompt,
+        )
         state.category = request.category
         _log_structured("INFO", "app.core.orchestrator", "Initiating TERA V2 execution pipeline", request.task_id)
 
@@ -1055,4 +1058,3 @@ class TERAOrchestrator:
             self.cache.insert(prompt, text)
         except Exception:
             pass
-

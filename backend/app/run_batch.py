@@ -115,6 +115,7 @@ async def process_task(
     request = InferenceRequest(
         prompt=prompt,
         task_id=conforming_task_id,
+        source_task_id=str(task_id_raw),
         c2=c2,
         c3=c3,
         lambda_coeff=lambda_coeff,
