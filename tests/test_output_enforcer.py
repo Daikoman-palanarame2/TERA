@@ -27,7 +27,20 @@ def test_exact_bullets_and_word_limit_support_markdown_and_numbering() -> None:
         text, exact_bullet_count=3, max_words_per_bullet=3
     )
     assert result.success
-    assert result.output == text
+    assert result.output == (
+        "- Fast local route\n- Zero external tokens\n- Verified output"
+    )
+    assert "bullet_markers_normalized" in result.transformations
+
+
+def test_ner_normalizes_institution_acronym_and_date_comma() -> None:
+    result = OutputEnforcer().enforce(
+        "DATE: July 4, 2025\nINSTITUTION: NUS (National University of Singapore)",
+        is_ner=True,
+    )
+
+    assert result.success
+    assert result.output == "July 4 2025 â€” DATE\nNUS â€” ORGANIZATION"
 
 
 def test_bullet_constraints_report_each_failure_without_truncation() -> None:

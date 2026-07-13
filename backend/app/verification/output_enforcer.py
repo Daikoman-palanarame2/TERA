@@ -198,6 +198,11 @@ class OutputEnforcer:
                         transformations.append(f"{required_term.replace(' ', '_')}_synonym_normalized")
 
             bullets = self._bullet_bodies(output)
+            if len(bullets) == exact_bullet_count:
+                normalized_bullets = "\n".join(f"- {body}" for body in bullets)
+                if normalized_bullets != output:
+                    output = normalized_bullets
+                    transformations.append("bullet_markers_normalized")
             if len(bullets) != exact_bullet_count:
                 failures.append("exact_bullet_count")
         else:
@@ -380,7 +385,7 @@ class OutputEnforcer:
                 if len(parts) >= 2:
                     p_first = parts[0].strip().upper()
                     p_last = parts[-1].strip().upper()
-                    if p_first.isupper() and len(p_first.split()) == 1 and p_first in {"PERSON", "ORGANIZATION", "LOCATION", "DATE"}:
+                    if p_first.isupper() and len(p_first.split()) == 1 and p_first in {"PERSON", "ORGANIZATION", "LOCATION", "DATE", "INSTITUTION"}:
                         entities.append((parts[1].strip(), p_first))
                     elif p_last.isupper() and len(p_last.split()) == 1:
                         ent = " — ".join(parts[:-1]).strip()
@@ -397,6 +402,14 @@ class OutputEnforcer:
         for ent, label in entities:
             ent_clean = ent.strip().strip('*#_ \t')
             label_clean = label.strip().upper()
+            if label_clean == "INSTITUTION":
+                label_clean = "ORGANIZATION"
+            if label_clean == "DATE":
+                ent_clean = re.sub(r"(?<=\w),(?=\s+\d)", "", ent_clean)
+            if label_clean == "ORGANIZATION":
+                acronym = re.match(r"^([A-Z][A-Z0-9&.-]{1,15})\s*\([^)]*\)$", ent_clean)
+                if acronym:
+                    ent_clean = acronym.group(1)
             if not ent_clean:
                 continue
             if label_clean not in valid_labels:

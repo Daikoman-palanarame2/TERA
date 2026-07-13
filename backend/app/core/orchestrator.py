@@ -191,7 +191,9 @@ class TERAOrchestrator:
             local_output = None
             state.local_model = getattr(self.settings, "tera_local_model_name", "unknown_local_model")
             try:
-                local_output = await self.local_client.generate_async(request.prompt, params)
+                local_output = await self.local_client.generate_async(
+                    self._enrich_prompt(request.prompt, request), params
+                )
             except InferenceTimeoutError as e:
                 _log_structured("WARNING", "app.core.orchestrator", f"Local model execution timed out: {e}. Falling back to remote.", request.task_id)
                 local_failed = True
@@ -215,6 +217,11 @@ class TERAOrchestrator:
                         request.schema_type == "json"
                         and local_output.text.lstrip().startswith("```")
                     ),
+                    is_sentiment=(
+                        "sentiment" in request.prompt.lower()
+                        or "classify" in request.prompt.lower()
+                    ),
+                    is_ner=self._is_ner(request.prompt.lower()),
                     **format_constraints,
                 )
                 if format_result.output != local_output.text:
@@ -494,7 +501,13 @@ class TERAOrchestrator:
     def _enrich_prompt(self, prompt: str, request: InferenceRequest) -> str:
         prompt_lower = prompt.lower()
         
-        is_comparison = "difference" in prompt_lower or "differences" in prompt_lower or "versus" in prompt_lower or " vs " in prompt_lower
+        is_comparison = (
+            "difference" in prompt_lower
+            or "differences" in prompt_lower
+            or "versus" in prompt_lower
+            or " vs " in prompt_lower
+            or "instead of" in prompt_lower
+        )
         is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
         is_ner = self._is_ner(prompt_lower)
                   
@@ -527,6 +540,9 @@ class TERAOrchestrator:
                 "4. The Reason must be exactly one sentence.\n"
                 "5. The Reason must acknowledge both positive and negative evidence present in the text.\n"
                 "6. Do not include any preamble, headers, or bold/markdown styling on the label. Return only the raw text line: Label — Reason"
+            )
+            extra_instructions.append(
+                "Reuse the exact positive and negative evidence phrases from the input; do not paraphrase them."
             )
         elif is_ner:
             extra_instructions.append(
@@ -967,7 +983,10 @@ class TERAOrchestrator:
         if (
             not format_result.success
             and format_result.failures  # at least one constraint explicitly failed
-            and getattr(self.settings, "tera_external_fallback_enabled", False)
+            and (
+                local_power_fallback
+                or getattr(self.settings, "tera_external_fallback_enabled", False)
+            )
         ):
             constraint_desc = "; ".join(format_result.failures)
             
