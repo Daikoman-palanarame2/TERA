@@ -23,6 +23,23 @@ from app.core.exceptions import CacheError, ConfigurationError
 logger = logging.getLogger("app.cache")
 
 
+class DisabledSemanticCache:
+    """No-op cache used when semantic-cache assets are intentionally unavailable."""
+
+    class _Environment:
+        def close(self) -> None:
+            return None
+
+    def __init__(self) -> None:
+        self.env = self._Environment()
+
+    def lookup(self, prompt: str, threshold: float = 0.95) -> Optional[str]:
+        return None
+
+    def insert(self, prompt: str, response: str) -> None:
+        return None
+
+
 class SemanticCache:
     def __init__(self, cache_dir: str, embedding_model_path: str) -> None:
         """Initialize LMDB client and load ONNX embedding model.

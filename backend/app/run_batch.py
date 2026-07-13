@@ -9,7 +9,7 @@ from typing import List, Dict, Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.core.config import settings, ENTROPY_THRESHOLD, MIN_PROBABILITY_FLOOR, MODEL_TIMEOUT_SEC, FALLBACK_RETRY_COUNT
-from app.cache.semantic_cache import SemanticCache
+from app.cache.semantic_cache import DisabledSemanticCache, SemanticCache
 from app.parser.intent_parser import IntentParser
 from app.solvers.solver_registry import SolverRegistry
 from app.solvers.plugins.arithmetic_solver import ArithmeticSolver
@@ -156,11 +156,15 @@ def main() -> None:
             print(f"  Settings Loaded. Fast local: {local_name}, Power local: {power_name}")
             
             # 2. Verify cache and registry loads
-            cache = SemanticCache(
-                cache_dir=settings.tera_cache_dir,
-                embedding_model_path=settings.tera_onnx_model_path
-            )
-            print("  Semantic Cache OK.")
+            if settings.tera_semantic_cache_enabled:
+                cache = SemanticCache(
+                    cache_dir=settings.tera_cache_dir,
+                    embedding_model_path=settings.tera_onnx_model_path
+                )
+                print("  Semantic Cache OK.")
+            else:
+                cache = DisabledSemanticCache()
+                print("  Semantic Cache intentionally disabled.")
             
             # 3. Solver registry setup
             registry = SolverRegistry()
@@ -296,11 +300,14 @@ def main() -> None:
             def close(self):
                 pass
         cache = MockSemanticCache()  # type: ignore
-    else:
+    elif settings.tera_semantic_cache_enabled:
         cache = SemanticCache(
             cache_dir=settings.tera_cache_dir,
             embedding_model_path=settings.tera_onnx_model_path
         )
+    else:
+        cache = DisabledSemanticCache()
+        print("Semantic cache disabled by TERA_SEMANTIC_CACHE_ENABLED=false.")
     registry = SolverRegistry()
     registry.register_solver(ArithmeticSolver())
     registry.register_solver(LogicSolver())

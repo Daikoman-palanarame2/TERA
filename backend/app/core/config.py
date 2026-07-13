@@ -33,6 +33,9 @@ class RuntimeSettings:
 
     def __init__(self) -> None:
         self.tera_cache_dir = os.getenv("TERA_CACHE_DIR", "/tmp/tera/cache")
+        self.tera_semantic_cache_enabled = os.getenv(
+            "TERA_SEMANTIC_CACHE_ENABLED", "true"
+        ).strip().lower() in {"1", "true", "yes", "on"}
         self.tera_onnx_model_path = os.getenv(
             "TERA_ONNX_MODEL_PATH", "/app/models/minilm.onnx"
         )
