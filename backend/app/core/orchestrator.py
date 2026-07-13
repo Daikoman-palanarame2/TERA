@@ -222,7 +222,10 @@ class TERAOrchestrator:
                         request.schema_type == "json"
                         and local_output.text.lstrip().startswith("```")
                     ),
-                    is_sentiment=self._is_sentiment(request.prompt.lower()),
+                    is_sentiment=(
+                        request.schema_type == "none"
+                        and self._is_sentiment(request.prompt.lower())
+                    ),
                     is_ner=self._is_ner(request.prompt.lower()),
                     **format_constraints,
                 )
@@ -303,7 +306,9 @@ class TERAOrchestrator:
                 f"Routing request to {escalation_route} client", request.task_id
             )
             state.remote_fallback_triggered = not local_power_fallback
-            remote_output = await self.remote_client.generate_async(request.prompt, params)
+            remote_output = await self.remote_client.generate_async(
+                self._enrich_prompt(request.prompt, request), params
+            )
             state.fireworks_tokens = 0 if local_power_fallback else remote_output.usage_tokens
             
             # Update state with remote inference telemetry
@@ -322,12 +327,40 @@ class TERAOrchestrator:
                     request.schema_type == "json"
                     and remote_output.text.lstrip().startswith("```")
                 ),
+                is_sentiment=(
+                    request.schema_type == "none"
+                    and self._is_sentiment(request.prompt.lower())
+                ),
+                is_ner=self._is_ner(request.prompt.lower()),
                 **self.output_enforcer.constraints_from_prompt(request.prompt),
             )
             if power_format_result.output != remote_output.text:
                 remote_output = remote_output.model_copy(
                     update={"text": power_format_result.output}
                 )
+            if (
+                not power_format_result.success
+                and "exact_sentence_count" in power_format_result.failures
+            ):
+                repaired_text = self._repair_two_sentence_contrast_summary(
+                    request.prompt
+                )
+                if repaired_text:
+                    repaired_result = self.output_enforcer.enforce(
+                        repaired_text,
+                        exact_sentence_count=2,
+                    )
+                    if repaired_result.success:
+                        remote_output = remote_output.model_copy(
+                            update={"text": repaired_result.output}
+                        )
+                        power_format_result = repaired_result
+                        _log_structured(
+                            "INFO",
+                            "app.core.orchestrator",
+                            "Applied deterministic contrast repair on legacy power path.",
+                            request.task_id,
+                        )
             remote_ver = self.rovl.verify(remote_output, constraints, task_id=request.task_id)
             if not power_format_result.success:
                 raise VerificationError(
