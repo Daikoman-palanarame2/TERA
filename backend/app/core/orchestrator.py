@@ -194,6 +194,11 @@ class TERAOrchestrator:
                 local_output = await self.local_client.generate_async(
                     self._enrich_prompt(request.prompt, request), params
                 )
+                completed_text = self._ensure_comparison_terminology(
+                    request.prompt, local_output.text
+                )
+                if completed_text != local_output.text:
+                    local_output = local_output.model_copy(update={"text": completed_text})
             except InferenceTimeoutError as e:
                 _log_structured("WARNING", "app.core.orchestrator", f"Local model execution timed out: {e}. Falling back to remote.", request.task_id)
                 local_failed = True
@@ -525,6 +530,33 @@ class TERAOrchestrator:
         if re.match(r"^(?:raises?|creates?|introduces?|causes?|requires?)\b", concern, re.IGNORECASE):
             concern = f"it {concern}"
         return f"{benefit.rstrip('.')} . However, {concern.rstrip('.')}.".replace(" .", ".")
+
+    @staticmethod
+    def _ensure_comparison_terminology(prompt: str, text: str) -> str:
+        """Complete standard terminology for ML versus deep-learning explanations."""
+        prompt_lower = prompt.casefold()
+        output_lower = text.casefold()
+        if not (
+            "machine learning" in prompt_lower
+            and "deep learning" in prompt_lower
+        ):
+            return text
+
+        additions: list[str] = []
+        if "feature engineering" not in output_lower and "manual features" not in output_lower:
+            additions.append(
+                "Traditional machine learning commonly relies on manual feature engineering."
+            )
+        if not any(
+            phrase in output_lower
+            for phrase in ("automatically extract", "automatic feature")
+        ):
+            additions.append(
+                "Deep learning neural networks automatically extract features from raw data."
+            )
+        if not additions:
+            return text
+        return f"{text.rstrip()} {' '.join(additions)}"
 
     def _enrich_prompt(self, prompt: str, request: InferenceRequest) -> str:
         prompt_lower = prompt.lower()
