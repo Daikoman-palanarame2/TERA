@@ -11,14 +11,14 @@ def test_ml_dl_comparison_adds_missing_manual_feature_distinction():
     completed = TERAOrchestrator._ensure_comparison_terminology(prompt, answer)
 
     assert "feature engineering" in completed
-    assert "automatically extract" in completed
+    assert "automatic feature" in completed
 
 
 def test_comparison_terminology_does_not_duplicate_complete_answer():
     prompt = "Compare machine learning and deep learning."
     answer = (
         "Machine learning can use manual feature engineering, while deep learning "
-        "neural networks automatically extract features."
+        "neural networks perform automatic feature extraction."
     )
 
     assert TERAOrchestrator._ensure_comparison_terminology(prompt, answer) == answer

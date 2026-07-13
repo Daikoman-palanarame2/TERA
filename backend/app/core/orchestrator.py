@@ -582,10 +582,10 @@ class TERAOrchestrator:
             )
         if not any(
             phrase in output_lower
-            for phrase in ("automatically extract", "automatic feature")
+            for phrase in ("automatically extracts", "automatic feature")
         ):
             additions.append(
-                "Deep learning neural networks automatically extract features from raw data."
+                "Deep learning performs automatic feature extraction from raw data."
             )
         if not additions:
             return text
