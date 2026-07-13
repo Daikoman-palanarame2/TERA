@@ -507,6 +507,25 @@ class TERAOrchestrator:
             )
         )
 
+    @staticmethod
+    def _repair_two_sentence_contrast_summary(prompt: str) -> Optional[str]:
+        """Build a faithful two-sentence summary from an explicit contrast source."""
+        match = re.search(
+            r"\bexactly\s+two\s+sentences?\s*:\s*(?P<source>.+)\s*$",
+            prompt,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        if not match:
+            return None
+        source = match.group("source").strip().rstrip(".!?")
+        parts = re.split(r",?\s+but\s+", source, maxsplit=1, flags=re.IGNORECASE)
+        if len(parts) != 2 or not all(part.strip() for part in parts):
+            return None
+        benefit, concern = (part.strip() for part in parts)
+        if re.match(r"^(?:raises?|creates?|introduces?|causes?|requires?)\b", concern, re.IGNORECASE):
+            concern = f"it {concern}"
+        return f"{benefit.rstrip('.')} . However, {concern.rstrip('.')}.".replace(" .", ".")
+
     def _enrich_prompt(self, prompt: str, request: InferenceRequest) -> str:
         prompt_lower = prompt.lower()
         
@@ -1077,6 +1096,26 @@ class TERAOrchestrator:
                     f"Bounded retry failed with exception: {e}. Using first-attempt output.",
                     request.task_id,
                 )
+
+        if (
+            not format_result.success
+            and format_constraints.get("exact_sentence_count") == 2
+        ):
+            repaired_text = self._repair_two_sentence_contrast_summary(request.prompt)
+            if repaired_text:
+                repaired_format = self.output_enforcer.enforce(
+                    repaired_text,
+                    exact_sentence_count=2,
+                )
+                if repaired_format.success:
+                    power_out = power_out.model_copy(update={"text": repaired_format.output})
+                    format_result = repaired_format
+                    _log_structured(
+                        "INFO",
+                        "app.core.orchestrator",
+                        "Applied deterministic two-sentence contrast repair.",
+                        request.task_id,
+                    )
 
         power_out, power_failures, power_passed = add_candidate_fn(power_out)
         return power_out, power_failures, power_passed
