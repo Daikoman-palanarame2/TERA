@@ -9,6 +9,8 @@ VLLM_LOG="${TERA_VLLM_LOG:-/output/vllm.log}"
 
 mkdir -p /output
 
+echo "ROCmRoute Zero — local-only AMD leaderboard runtime"
+
 if [[ ! -s "$INPUT_PATH" ]]; then
   echo "Missing or empty benchmark input: $INPUT_PATH" >&2
   exit 2
@@ -57,4 +59,3 @@ done
 
 python /app/backend/app/run_batch.py --input "$INPUT_PATH" --output "$RESULTS_PATH"
 python /app/scripts/check_submission_output.py --input "$INPUT_PATH" --results "$RESULTS_PATH"
-

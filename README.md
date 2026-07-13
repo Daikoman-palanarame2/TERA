@@ -1,13 +1,17 @@
-# TERA Track 1 Production Guide & Deployment Instructions
+# ROCmRoute Zero — AMD Track 1
 
-This guide documents the procedures to build, configure, run, and self-test TERA in the production AMD Developer Hackathon Track 1 container environment.
+ROCmRoute Zero is a local-first routing agent for the AMD Developer Hackathon. It combines deterministic zero-token solvers, response verification, and a locally hosted Qwen model running through vLLM on AMD ROCm hardware.
+
+The leaderboard runtime makes no Fireworks or other external inference calls. The validated AMD notebook run used `Qwen/Qwen2.5-Coder-7B-Instruct`, achieved 100% accuracy on the 16 retired public validation tasks, and recorded zero external tokens and zero external API calls. These public results do not guarantee hidden-set accuracy.
+
+The internal Python package and environment-variable prefix remain `TERA` for backward compatibility with the frozen interface contracts.
 
 ---
 
-## TERA System Architecture & Overview
+## ROCmRoute Zero System Architecture & Overview
 
 ### Project Overview
-**TERA (Token-Efficient Routing Agent)** is an optimization-based, token-efficient LLM routing platform designed to dynamically route queries between a cheap model lane and a dense model lane on the Fireworks platform. It minimizes API cost and token consumption while preserving task accuracy under stringent format constraints.
+**ROCmRoute Zero** routes requests through deterministic solvers, a fast local inference lane, and a local power lane. Both neural lanes use the bundled Qwen model through loopback-only vLLM; external fallback is hard-disabled in the leaderboard profile.
 
 ### System Architecture
 The TERA pipeline is modular and executes in microsecond scales on CPU before initiating external API requests:
