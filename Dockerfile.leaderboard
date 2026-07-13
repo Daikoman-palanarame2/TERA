@@ -1,0 +1,39 @@
+FROM vllm/vllm-openai-rocm:v0.16.0
+
+USER root
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app/backend \
+    HF_HOME=/models/huggingface \
+    TERA_SEMANTIC_CACHE_ENABLED=false \
+    TERA_CACHE_STATE=disabled \
+    TERA_EXTERNAL_FALLBACK_ENABLED=false \
+    TERA_LOCAL_INFERENCE_URL=http://127.0.0.1:8000/v1 \
+    TERA_POWER_INFERENCE_URL=http://127.0.0.1:8000/v1 \
+    TERA_LOCAL_MODEL_NAME=Qwen/Qwen2.5-Coder-7B-Instruct \
+    TERA_POWER_MODEL_NAME=Qwen/Qwen2.5-Coder-7B-Instruct \
+    TERA_MIN_VLLM_VERSION=0.16.0 \
+    TERA_MODEL_TIMEOUT_SEC=120 \
+    TERA_MAX_CONCURRENCY=4 \
+    TERA_INPUT_PATH=/input/tasks.json \
+    TERA_RESULTS_PATH=/output/results.json \
+    TERA_TELEMETRY_PATH=/output/telemetry.json
+
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN python -m pip install --no-cache-dir -r /app/backend/requirements.txt
+
+# The judge may not have outbound network access. Download weights while the
+# image is built so runtime startup is fully offline and reproducible.
+RUN python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen2.5-Coder-7B-Instruct', local_dir='/models/qwen2.5-coder-7b', local_dir_use_symlinks=False)"
+
+COPY backend /app/backend
+COPY configs /app/configs
+COPY scripts/check_submission_output.py /app/scripts/check_submission_output.py
+COPY entrypoint.leaderboard.sh /app/entrypoint.leaderboard.sh
+RUN sed -i 's/\r$//' /app/entrypoint.leaderboard.sh && chmod +x /app/entrypoint.leaderboard.sh
+
+VOLUME ["/input", "/output"]
+ENTRYPOINT ["/app/entrypoint.leaderboard.sh"]
+
