@@ -23,8 +23,7 @@ done
 # Initialize validation indicators
 ROUTER_MODEL_OK="FAIL"
 CALIBRATION_MODEL_OK="FAIL"
-FIREWORKS_CONFIG_OK="FAIL"
-ALLOWED_MODELS_OK="FAIL"
+LOCAL_MODELS_OK="FAIL"
 INPUT_FILE_OK="FAIL"
 OUTPUT_DIR_OK="FAIL"
 VALIDATION_FAILED=false
@@ -44,35 +43,20 @@ else
   VALIDATION_FAILED=true
 fi
 
-# 2. Verify Fireworks API configuration (if not in self-test mode)
+# 2. Verify local model configuration (if not in self-test mode)
 if [ "$SELF_TEST" = "true" ]; then
-  FIREWORKS_CONFIG_OK="SKIP"
+  LOCAL_MODELS_OK="SKIP"
 else
-  # Accept canonical TERA_FIREWORKS_API_KEY or legacy alias FIREWORKS_API_KEY.
-  # Accept canonical TERA_FIREWORKS_API_URL or legacy alias FIREWORKS_BASE_URL.
-  _fw_key="${TERA_FIREWORKS_API_KEY:-${FIREWORKS_API_KEY:-}}"
-  _fw_url="${TERA_FIREWORKS_API_URL:-${FIREWORKS_BASE_URL:-}}"
-  if [ -n "$_fw_key" ] && [ -n "$_fw_url" ]; then
-    FIREWORKS_CONFIG_OK="OK"
+  if [ -n "${TERA_LOCAL_MODEL_NAME:-}" ] && [ -n "${TERA_POWER_MODEL_NAME:-}" ] && \
+     [ -n "${TERA_LOCAL_INFERENCE_URL:-}" ] && [ -n "${TERA_POWER_INFERENCE_URL:-}" ]; then
+    LOCAL_MODELS_OK="OK"
   else
-    echo "Error: Fireworks credentials not set. Provide TERA_FIREWORKS_API_KEY (or FIREWORKS_API_KEY) and TERA_FIREWORKS_API_URL (or FIREWORKS_BASE_URL)."
+    echo "Error: local fast/power model names and inference URLs must be configured."
     VALIDATION_FAILED=true
   fi
 fi
 
-# 3. Verify ALLOWED_MODELS configuration (if not in self-test mode)
-if [ "$SELF_TEST" = "true" ]; then
-  ALLOWED_MODELS_OK="SKIP"
-else
-  if [ -n "$ALLOWED_MODELS" ]; then
-    ALLOWED_MODELS_OK="OK"
-  else
-    echo "Error: ALLOWED_MODELS environment variable is not set!"
-    VALIDATION_FAILED=true
-  fi
-fi
-
-# 4. Verify input file existence (if not in self-test mode)
+# 3. Verify input file existence (if not in self-test mode)
 if [ "$SELF_TEST" = "true" ]; then
   INPUT_FILE_OK="SKIP"
 else
@@ -84,7 +68,7 @@ else
   fi
 fi
 
-# 5. Verify output directory exists and is writable
+# 4. Verify output directory exists and is writable
 # Create if missing
 mkdir -p /output || { echo "Error: Failed to create /output directory!"; VALIDATION_FAILED=true; }
 
@@ -104,8 +88,7 @@ echo "TERA Track 1 Production"
 echo ""
 echo "Router Model ............ $ROUTER_MODEL_OK"
 echo "Calibration Model ....... $CALIBRATION_MODEL_OK"
-echo "Fireworks Config ........ $FIREWORKS_CONFIG_OK"
-echo "Allowed Models .......... $ALLOWED_MODELS_OK"
+echo "Local Model Config ...... $LOCAL_MODELS_OK"
 echo "Input File .............. $INPUT_FILE_OK"
 echo "Output Directory ........ $OUTPUT_DIR_OK"
 echo ""

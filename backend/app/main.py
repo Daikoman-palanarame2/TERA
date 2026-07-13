@@ -1,4 +1,5 @@
 import os
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -18,7 +19,7 @@ from app.solvers.plugins.text_counter_solver import TextCounterSolver
 from app.solvers.plugins.word_problem_solver import WordProblemSolver
 from app.inference.local_client import LocalModelClient
 from app.inference.local_power_client import LocalPowerModelClient
-from app.inference.remote_client import RemoteModelClient
+from app.inference.readiness import check_vllm_endpoint
 from app.verification.rovl import ROVL
 from app.core.orchestrator import TERAOrchestrator
 
@@ -52,24 +53,27 @@ async def lifespan(app: FastAPI):
         timeout_sec=settings.tera_model_timeout_sec
     )
     
-    # 5. Power tier: local vLLM by default; Fireworks is explicit opt-in only.
-    if settings.tera_external_fallback_enabled:
-        if not settings.tera_fireworks_api_key:
-            raise RuntimeError(
-                "TERA_FIREWORKS_API_KEY is required when external fallback is enabled."
-            )
-        remote_client = RemoteModelClient(
-            api_key=settings.tera_fireworks_api_key,
-            endpoint_url=settings.tera_fireworks_api_url,
-            model_name=settings.tera_remote_model_name,
-            max_retries=FALLBACK_RETRY_COUNT
-        )
-    else:
-        remote_client = LocalPowerModelClient(
-            endpoint_url=settings.tera_power_inference_url,
-            model_name=settings.tera_power_model_name,
-            timeout_sec=settings.tera_model_timeout_sec
-        )
+    # 5. Power tier: always a second local vLLM endpoint.
+    remote_client = LocalPowerModelClient(
+        endpoint_url=settings.tera_power_inference_url,
+        model_name=settings.tera_power_model_name,
+        timeout_sec=settings.tera_model_timeout_sec
+    )
+
+    await asyncio.gather(
+        check_vllm_endpoint(
+            settings.tera_local_inference_url,
+            settings.tera_local_model_name,
+            settings.tera_min_vllm_version,
+            settings.tera_readiness_timeout_sec,
+        ),
+        check_vllm_endpoint(
+            settings.tera_power_inference_url,
+            settings.tera_power_model_name,
+            settings.tera_min_vllm_version,
+            settings.tera_readiness_timeout_sec,
+        ),
+    )
     
     # 6. ROVL Verification
     rovl = ROVL(

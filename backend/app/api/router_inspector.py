@@ -8,14 +8,14 @@ from app.core.config import settings
 from app.verification.rovl import ROVL
 from app.schemas.data_contracts import InferenceRequest
 from app.core.orchestrator import TERAOrchestrator
-from app.inference.cheap_model import CheapModel
-from app.inference.dense_model import DenseModel
-from app.inference.remote_client import RemoteModelClient as FireworksModel
+from app.inference.local_client import LocalModelClient
+from app.inference.local_power_client import LocalPowerModelClient
 from app.cache.semantic_cache import SemanticCache
 from app.solvers.solver_registry import SolverRegistry
 from app.solvers.plugins.arithmetic_solver import ArithmeticSolver
 from app.solvers.plugins.logic_solver import LogicSolver
 from app.solvers.plugins.text_counter_solver import TextCounterSolver
+from app.solvers.plugins.word_problem_solver import WordProblemSolver
 from app.parser.intent_parser import IntentParser
 from app.router.regex_patterns import DEFAULT_PATTERNS
 
@@ -54,23 +54,20 @@ async def inspect_route(request: InspectorRequest, fastapi_req: Request) -> Dict
             registry.register_solver(ArithmeticSolver())
             registry.register_solver(LogicSolver())
             registry.register_solver(TextCounterSolver())
+            registry.register_solver(WordProblemSolver())
             registry.lock()
             parser = IntentParser(registry)
             
-            if settings.tera_fireworks_api_key:
-                cheap_model = FireworksModel(
-                    api_key=settings.tera_fireworks_api_key,
-                    endpoint_url=settings.tera_fireworks_api_url,
-                    model_name=settings.tera_local_model_name
-                )
-                dense_model = FireworksModel(
-                    api_key=settings.tera_fireworks_api_key,
-                    endpoint_url=settings.tera_fireworks_api_url,
-                    model_name=settings.tera_remote_model_name
-                )
-            else:
-                cheap_model = CheapModel()  # type: ignore
-                dense_model = DenseModel()  # type: ignore
+            cheap_model = LocalModelClient(
+                endpoint_url=settings.tera_local_inference_url,
+                model_name=settings.tera_local_model_name,
+                timeout_sec=settings.tera_model_timeout_sec,
+            )
+            dense_model = LocalPowerModelClient(
+                endpoint_url=settings.tera_power_inference_url,
+                model_name=settings.tera_power_model_name,
+                timeout_sec=settings.tera_model_timeout_sec,
+            )
                 
             rovl = ROVL(entropy_threshold=settings.entropy_threshold)
             orchestrator = TERAOrchestrator(

@@ -40,36 +40,25 @@ class RuntimeSettings:
             "TERA_LOCAL_INFERENCE_URL", "http://localhost:8000/v1"
         )
         self.tera_local_model_name = os.getenv(
-            "TERA_LOCAL_MODEL_NAME", "Qwen/Qwen2.5-Coder-7B-Instruct"
+            "TERA_LOCAL_MODEL_NAME", "google/gemma-4-E4B-it"
         )
         self.tera_power_inference_url = os.getenv(
             "TERA_POWER_INFERENCE_URL", "http://localhost:8001/v1"
         )
         self.tera_power_model_name = os.getenv(
-            "TERA_POWER_MODEL_NAME", "Qwen/Qwen2.5-14B-Instruct"
+            "TERA_POWER_MODEL_NAME", "google/gemma-4-26B-A4B-it"
         )
-        # Canonical credential variable; accept legacy alias FIREWORKS_API_KEY for
-        # competition environments that inject the older name. Never log or print.
-        self.tera_fireworks_api_key = (
-            os.getenv("TERA_FIREWORKS_API_KEY")
-            or os.getenv("FIREWORKS_API_KEY")
-        ) or None
-        self.tera_fireworks_api_url = (
-            os.getenv("TERA_FIREWORKS_API_URL")
-            or os.getenv("FIREWORKS_BASE_URL")
-            or "https://api.fireworks.ai/v1"
-        )
-        self.tera_remote_model_name = os.getenv(
-            "TERA_REMOTE_MODEL_NAME", "accounts/fireworks/models/gpt-oss-120b"
-        )
-        self.tera_external_fallback_enabled = os.getenv(
-            "TERA_EXTERNAL_FALLBACK_ENABLED", "false"
-        ).strip().lower() in {"1", "true", "yes", "on"}
+        # External inference is intentionally unsupported in the competition path.
+        self.tera_external_fallback_enabled = False
         self.tera_model_timeout_sec = float(
             os.getenv("TERA_MODEL_TIMEOUT_SEC", str(MODEL_TIMEOUT_SEC))
         )
         if self.tera_model_timeout_sec <= 0:
             raise ConfigurationError("TERA_MODEL_TIMEOUT_SEC must be positive.")
+        self.tera_min_vllm_version = os.getenv("TERA_MIN_VLLM_VERSION", "0.19.0")
+        self.tera_readiness_timeout_sec = float(
+            os.getenv("TERA_READINESS_TIMEOUT_SEC", "15")
+        )
         self.tera_log_level = os.getenv("TERA_LOG_LEVEL", "INFO")
         self.tera_telemetry_path = os.getenv(
             "TERA_TELEMETRY_PATH", "/app/output/telemetry.json"

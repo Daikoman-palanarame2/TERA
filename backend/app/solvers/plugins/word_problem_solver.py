@@ -59,7 +59,7 @@ class WordProblemSolver(BaseSolver):
         # Original requirement match
         # "requires X cups of sugar to make Y cookies", "calls for X cups of sugar for Y servings"
         orig_match = re.search(
-            r"\b(?:requires|calls\s+for)\s+(?P<sugar>[0-9\/\s\.]+)\s+(?:cup|cups)\s+of\s+sugar\s+(?:to\s+make|for)\s+(?P<servings>[\d,]+)\s+(?P<unit>cookies|servings|serves)\b",
+            r"\b(?:requires|calls\s+for|uses)\s+(?P<sugar>[0-9\/\s\.]+)\s+(?:cup|cups)\s+(?:of\s+sugar\s+)?(?:to\s+make|for)\s+(?P<servings>[\d,]+)\s+(?P<unit>cookies|servings|serves)\b",
             prompt,
             re.IGNORECASE
         )
@@ -94,7 +94,7 @@ class WordProblemSolver(BaseSolver):
         # Cost match
         # "costs $C per cup", "price is $C per cup", "cost of $C per cup"
         cost_match = re.search(
-            r"\b(?:cost|costs|price)(?:\s+is)?\s+\$(?P<cost>[\d\.,]+)\s+per\s+(?:cup|unit)\b",
+            r"\b(?:cost|costs|price)(?:\s+(?:is|at))?\s+\$(?P<cost>[\d\.,]+)\s+per\s+(?:cup|unit)\b",
             prompt,
             re.IGNORECASE
         )
@@ -197,7 +197,7 @@ class WordProblemSolver(BaseSolver):
     def _solve_inventory(self, prompt: str) -> str:
         # Match starting stock
         start_match = re.search(
-            r"\b(?:starts with|starting (?:stock|inventory) (?:is|of)|initial (?:stock|inventory) (?:is|of))\s+(?P<start>[\d,]+)\s+units\b",
+            r"\b(?:starts with|starting (?:stock|inventory) (?:is|of)|initial (?:stock|inventory) (?:is|of)|inventory is|start with)\s+(?P<start>[\d,]+)(?:\s+units)?\b",
             prompt,
             re.IGNORECASE
         )
@@ -205,18 +205,23 @@ class WordProblemSolver(BaseSolver):
             raise VerificationError("Inventory starting stock not found.")
 
         # Match reduction percentage
-        # We explicitly require "starting stock", "stock", "initial stock", or "promotion" to avoid ambiguous bases
         pct_match = re.search(
-            r"\b(?:reduced|reduction|decreased) by\s+(?P<pct>\d+(?:\.\d+)?)\%\s*(?:of (?:the )?starting stock|due to a promotion|of stock|of the stock)\b",
+            r"\b(?:reduced|reduction|decreased|sells|sell|sold) (?:by\s+)?(?P<pct>\d+(?:\.\d+)?)\%\s*(?P<suffix>(?:of|due\s+to|from|than)\s+[\w\s\-]+)?",
             prompt,
             re.IGNORECASE
         )
         if not pct_match:
             raise VerificationError("Inventory reduction percentage base is ambiguous or missing.")
+            
+        suffix = (pct_match.group("suffix") or "").strip().lower()
+        if suffix:
+            # Suffix is present. If it doesn't refer to stock or promotion, it's ambiguous!
+            if not any(k in suffix for k in ["stock", "promotion", "initial", "starting"]):
+                raise VerificationError("Inventory reduction percentage base is ambiguous or missing.")
 
         # Match restock
         restock_match = re.search(
-            r"\b(?:restock(?:s)?(?: by receiving)?|receives|restocked with|adds)\s+(?P<restock>[\d,]+)\s+units\b",
+            r"\b(?:restock(?:s)?(?: by receiving)?|receives|receive|restocked with|adds|restock)\s+(?P<restock>[\d,]+)(?!\s*(?:\.\d+)?\%)(?:\s+units)?\b",
             prompt,
             re.IGNORECASE
         )
@@ -225,7 +230,7 @@ class WordProblemSolver(BaseSolver):
 
         # Match final sale/shipment
         ship_match = re.search(
-            r"\b(?:ship(?:s|ped)?(?: out)?|sell(?:s)?|sold|shipped)\s+(?P<shipped>[\d,]+)\s+units\b",
+            r"\b(?:ship(?:s|ped)?(?: out)?|sell(?:s)?|sold|shipped|ship)\s+(?P<shipped>[\d,]+)(?!\s*(?:\.\d+)?\%)(?:\s+units)?\b",
             prompt,
             re.IGNORECASE
         )
@@ -233,7 +238,12 @@ class WordProblemSolver(BaseSolver):
             raise VerificationError("Inventory final shipment count not found.")
 
         # Unexplained numbers check
-        all_numbers = re.findall(r"\d+(?:,\d+)*(?:\.\d+)?", prompt)
+        prompt_without_quarter_labels = re.sub(
+            r"\bQ[1-4]\b", "", prompt, flags=re.IGNORECASE
+        )
+        all_numbers = re.findall(
+            r"\d+(?:,\d+)*(?:\.\d+)?", prompt_without_quarter_labels
+        )
         try:
             start = Decimal(start_match.group("start").replace(",", ""))
             pct = Decimal(pct_match.group("pct"))

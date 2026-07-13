@@ -18,43 +18,12 @@ from app.solvers.plugins.text_counter_solver import TextCounterSolver
 from app.solvers.plugins.word_problem_solver import WordProblemSolver
 from app.inference.local_client import LocalModelClient
 from app.inference.local_power_client import LocalPowerModelClient
-from app.inference.remote_client import RemoteModelClient
-from app.core.exceptions import InferenceTimeoutError
+from app.inference.readiness import check_vllm_endpoint
 from app.verification.rovl import ROVL
 from app.core.orchestrator import TERAOrchestrator
 from app.schemas.data_contracts import InferenceRequest
+from app.utils.run_metadata import build_run_metadata, write_run_metadata
 
-
-class NullModelClient:
-    """Emergency-mode local-client stub.
-
-    Raises InferenceTimeoutError immediately so the orchestrator's fallback
-    path activates without making any HTTP call to localhost.
-    """
-
-    tier = None  # not local_power; triggers remote_fallback telemetry label
-
-    async def generate_async(self, prompt: str, params=None):
-        raise InferenceTimeoutError(
-            "NullModelClient: local model not available in emergency external mode."
-        )
-
-    async def generate_n_async(self, prompt: str, n: int, params=None) -> list:
-        results = []
-        for _ in range(n):
-            results.append({
-                "success": False,
-                "output": None,
-                "error": "NullModelClient: local model not available in emergency external mode.",
-                "latency_ms": 0.0,
-                "usage_tokens": 0,
-                "prompt_tokens": 0,
-                "completion_tokens": 0,
-            })
-        return results
-
-    async def close(self):
-        pass
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="TERA V2 Batch Processing Harness")
@@ -183,8 +152,8 @@ def main() -> None:
         try:
             # 1. Verify settings load
             local_name = settings.tera_local_model_name
-            remote_name = settings.tera_remote_model_name
-            print(f"  Settings Loaded. Local: {local_name}, Remote: {remote_name}")
+            power_name = settings.tera_power_model_name
+            print(f"  Settings Loaded. Fast local: {local_name}, Power local: {power_name}")
             
             # 2. Verify cache and registry loads
             cache = SemanticCache(
@@ -208,25 +177,12 @@ def main() -> None:
                 model_name=settings.tera_local_model_name,
                 timeout_sec=settings.tera_model_timeout_sec
             )
-            if settings.tera_external_fallback_enabled:
-                if not settings.tera_fireworks_api_key:
-                    raise RuntimeError(
-                        "A Fireworks API key is required when external fallback is enabled. "
-                        "Set TERA_FIREWORKS_API_KEY or the legacy alias FIREWORKS_API_KEY."
-                    )
-                remote_client = RemoteModelClient(
-                    api_key=settings.tera_fireworks_api_key,
-                    endpoint_url=settings.tera_fireworks_api_url,
-                    model_name=settings.tera_remote_model_name,
-                    max_retries=FALLBACK_RETRY_COUNT
-                )
-            else:
-                remote_client = LocalPowerModelClient(
-                    endpoint_url=settings.tera_power_inference_url,
-                    model_name=settings.tera_power_model_name,
-                    timeout_sec=settings.tera_model_timeout_sec
-                )
-            print("  Local & Remote model clients OK.")
+            remote_client = LocalPowerModelClient(
+                endpoint_url=settings.tera_power_inference_url,
+                model_name=settings.tera_power_model_name,
+                timeout_sec=settings.tera_model_timeout_sec
+            )
+            print("  Fast-local and power-local model clients OK.")
             
             # 5. Verify orchestrator initializes
             rovl = ROVL(
@@ -247,12 +203,6 @@ def main() -> None:
             # Clean up cache database handle
             cache.env.close()
             
-            # Configuration validation warning if API key absent
-            if not settings.tera_fireworks_api_key:
-                print("  Note: Fireworks API key not set (TERA_FIREWORKS_API_KEY / FIREWORKS_API_KEY). Expected for dry runs.")
-            else:
-                print("  Fireworks API key present (TERA_FIREWORKS_API_KEY or FIREWORKS_API_KEY alias).")
-                
             print("Self-test passed successfully.")
             sys.exit(0)
         except Exception as e:
@@ -317,6 +267,17 @@ def main() -> None:
         print("Error: Input JSON must be a list of tasks.", file=sys.stderr)
         sys.exit(1)
 
+    run_metadata_path = os.path.join(os.path.dirname(output_path), "run_metadata.json")
+    write_run_metadata(
+        run_metadata_path,
+        build_run_metadata(
+            input_path,
+            settings,
+            cache_state="mock" if args.mock else os.getenv("TERA_CACHE_STATE", "unknown"),
+        ),
+    )
+    print(f"Writing run metadata to: {run_metadata_path}")
+
     # 3. Initialize TERA V2 Components
     print("Initializing TERA V2 pipeline components...")
     if args.mock:
@@ -351,12 +312,23 @@ def main() -> None:
     
     if args.mock:
         from app.schemas.data_contracts import RawModelOutput, TokenLogprob
+        from app.verification.output_enforcer import OutputEnforcer
         class MockModelClient:
             def __init__(self, answer_text: str):
                 self.answer_text = answer_text
             async def generate_async(self, prompt: str, params: Any = None) -> RawModelOutput:
-                # Return conforming JSON structure if prompt indicates json/regex schema requested
-                if "json" in prompt.lower() or "schema" in prompt.lower() or "payload" in prompt.lower():
+                constraints = OutputEnforcer.constraints_from_prompt(prompt)
+                if "exact_bullet_count" in constraints:
+                    count = constraints["exact_bullet_count"]
+                    text = "\n".join(
+                        f"- Mock validation point {index + 1}" for index in range(count)
+                    )
+                elif "exact_sentence_count" in constraints:
+                    count = constraints["exact_sentence_count"]
+                    text = " ".join(
+                        f"Mock validation sentence {index + 1}." for index in range(count)
+                    )
+                elif "json" in prompt.lower() or "schema" in prompt.lower() or "payload" in prompt.lower():
                     text = '{"status": "success", "data": "mocked"}\n'
                 else:
                     text = self.answer_text
@@ -388,35 +360,35 @@ def main() -> None:
         mock_remote.tier = "local_power"  # type: ignore
         remote_client = mock_remote
     else:
-        if settings.tera_external_fallback_enabled:
-            # --- Emergency external mode ---
-            # Do not create LocalModelClient; use NullModelClient so the orchestrator's
-            # cascade will immediately escalate every non-deterministic task to Fireworks.
-            if not settings.tera_fireworks_api_key:
-                raise RuntimeError(
-                    "A Fireworks API key is required when external fallback is enabled. "
-                    "Set TERA_FIREWORKS_API_KEY or the legacy alias FIREWORKS_API_KEY."
-                )
-            local_client = NullModelClient()  # type: ignore
-            remote_client = RemoteModelClient(
-                api_key=settings.tera_fireworks_api_key,
-                endpoint_url=settings.tera_fireworks_api_url,
-                model_name=settings.tera_remote_model_name,
-                max_retries=FALLBACK_RETRY_COUNT
+        local_client = LocalModelClient(
+            endpoint_url=settings.tera_local_inference_url,
+            model_name=settings.tera_local_model_name,
+            timeout_sec=settings.tera_model_timeout_sec
+        )
+        remote_client = LocalPowerModelClient(
+            endpoint_url=settings.tera_power_inference_url,
+            model_name=settings.tera_power_model_name,
+            timeout_sec=settings.tera_model_timeout_sec
+        )
+        print("Checking local vLLM readiness...")
+        async def check_model_readiness() -> None:
+            await asyncio.gather(
+                check_vllm_endpoint(
+                    settings.tera_local_inference_url,
+                    settings.tera_local_model_name,
+                    settings.tera_min_vllm_version,
+                    settings.tera_readiness_timeout_sec,
+                ),
+                check_vllm_endpoint(
+                    settings.tera_power_inference_url,
+                    settings.tera_power_model_name,
+                    settings.tera_min_vllm_version,
+                    settings.tera_readiness_timeout_sec,
+                ),
             )
-            print(f"Emergency external mode: routing non-deterministic tasks to Fireworks model '{settings.tera_remote_model_name}'.")
-        else:
-            # --- Normal local mode ---
-            local_client = LocalModelClient(
-                endpoint_url=settings.tera_local_inference_url,
-                model_name=settings.tera_local_model_name,
-                timeout_sec=settings.tera_model_timeout_sec
-            )
-            remote_client = LocalPowerModelClient(
-                endpoint_url=settings.tera_power_inference_url,
-                model_name=settings.tera_power_model_name,
-                timeout_sec=settings.tera_model_timeout_sec
-            )
+
+        asyncio.run(check_model_readiness())
+        print("Local vLLM readiness passed.")
     rovl = ROVL(
         entropy_threshold=ENTROPY_THRESHOLD,
         min_prob_floor=MIN_PROBABILITY_FLOOR

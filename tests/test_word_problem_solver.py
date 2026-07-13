@@ -34,9 +34,17 @@ class TestWordProblemSolver(unittest.TestCase):
         res = self.solver.solve(prompt)
         self.assertEqual(res, "1170")
 
+    def test_public_inventory_quarter_labels_are_not_quantities(self):
+        prompt = (
+            "A warehouse starts with 2,400 units. In Q1 it sells 37% of stock. "
+            "In Q2 it restocks 800 units. In Q3 it sells 640 units. How many remain?"
+        )
+        self.assertEqual(self.solver.solve(prompt), "1672")
+
     def test_inventory_unexplained_numbers(self):
         prompt = (
-            "In Q1, a warehouse starts with 1,200 units of stock. The inventory is reduced by 15% due to a promotion. "
+            "A warehouse starts with 1,200 units of stock. During a 7-day campaign, "
+            "the inventory is reduced by 15% due to a promotion. "
             "Later, they restock by receiving 450 units, and then ship out 300 units to customers. How many units remain?"
         )
         with self.assertRaises(VerificationError):
@@ -85,6 +93,16 @@ class TestWordProblemSolver(unittest.TestCase):
         )
         res = self.solver.solve(prompt)
         self.assertEqual(res, "The recipe requires 3.75 cups of sugar and will cost $15.00.")
+
+    def test_public_recipe_uses_and_cost_at_phrasing(self):
+        prompt = (
+            "A recipe uses 2/3 cup for 8 servings. How many cups for 18 servings, "
+            "and cost at $3 per cup?"
+        )
+        self.assertEqual(
+            self.solver.solve(prompt),
+            "The recipe requires 1.5 cups of sugar and will cost $4.50.",
+        )
 
     def test_recipe_unexplained_numbers(self):
         prompt = (

@@ -214,13 +214,30 @@ class LocalModelClient(ModelInterface):
             "logprobs": True,
             "top_logprobs": 1
         }
+
+        category = str((params or {}).get("category", "")).casefold()
+        prompt_lower = prompt.casefold()
+        if category in {"sentiment_classification", "classification"} or "classify" in prompt_lower:
+            payload.update({"max_tokens": 160, "temperature": 0.0})
+        elif category in {"named_entity_recognition", "ner"} or "named entit" in prompt_lower:
+            payload.update({"max_tokens": 300, "temperature": 0.0})
+        elif category in {"mathematical_reasoning", "math"} or any(
+            marker in prompt_lower for marker in ("calculate", "solve", "how many", "how much")
+        ):
+            payload.update({"max_tokens": 400, "temperature": 0.0})
+        elif category == "text_summarization" or "summarize" in prompt_lower:
+            payload.update({"max_tokens": 450, "temperature": 0.0})
+        elif category in {"creative", "creative_writing"}:
+            payload.update({"max_tokens": 900, "temperature": 0.4})
+        else:
+            payload.update({"max_tokens": 500, "temperature": 0.0})
         
         # Merge input parameters, filtering out system metadata like task_id
         task_id = None
         if params:
             task_id = params.get("task_id")
             for k, v in params.items():
-                if k != "task_id":
+                if k not in {"task_id", "category"}:
                     payload[k] = v
 
         max_retries = 3
@@ -392,4 +409,3 @@ class LocalModelClient(ModelInterface):
                 raise e
 
         return results
-

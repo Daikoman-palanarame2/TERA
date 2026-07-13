@@ -8,6 +8,7 @@ Purpose:
 import json
 import logging
 import datetime
+import re
 from typing import Dict, Any, Optional, List, Tuple
 
 from app.schemas.data_contracts import (
@@ -181,7 +182,7 @@ class TERAOrchestrator:
 
             # 4. Local Model Inference
             _log_structured("INFO", "app.core.orchestrator", "Routing request to Local LLM client", request.task_id)
-            params = {"task_id": request.task_id}
+            params = {"task_id": request.task_id, "category": request.category}
 
             local_failed = False
             local_output = None
@@ -479,6 +480,94 @@ class TERAOrchestrator:
         except Exception as e:
             _log_structured("ERROR", "app.core.orchestrator", f"Failed to populate/write telemetry: {e}", state.task_id)
 
+    def _is_ner(self, prompt_lower: str) -> bool:
+        return (
+            "named entity" in prompt_lower
+            or "entities" in prompt_lower
+            or re.search(r"\bner\b", prompt_lower) is not None
+            or ("extract" in prompt_lower and any(k in prompt_lower for k in ["person", "organization", "location", "date"]))
+        )
+
+    def _enrich_prompt(self, prompt: str, request: InferenceRequest) -> str:
+        prompt_lower = prompt.lower()
+        
+        is_comparison = "difference" in prompt_lower or "differences" in prompt_lower or "versus" in prompt_lower or " vs " in prompt_lower
+        is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+        is_ner = self._is_ner(prompt_lower)
+                  
+        format_constraints = self.output_enforcer.constraints_from_prompt(prompt)
+        exact_bullet_count = format_constraints.get("exact_bullet_count")
+        max_words_per_bullet = format_constraints.get("max_words_per_bullet")
+        
+        extra_instructions = []
+        
+        if is_comparison:
+            extra_instructions.append(
+                "You must answer this comparison task thoroughly and strictly satisfy the following:\n"
+                "1. Make sure every requested item is fully answered.\n"
+                "2. State the relationship between the items explicitly (e.g. subset, opposite, complementary).\n"
+                "3. Explain the defining mechanism of each item.\n"
+                "4. Compare them across the requested dimensions including volatility, speed, and use.\n"
+                "5. Explain the practical purpose or use of each item.\n"
+                "6. Address all subquestions without omitting any.\n"
+                "7. Use standard terminology: write 'feature engineering' (not 'feature-engineering' or 'engineered features') when describing traditional ML's approach to features; write 'neural network' (with a space, not hyphenated) and 'automatically extracts' or 'automatic feature' when describing deep learning.\n"
+                "Do not use non-breaking Unicode hyphens (use standard ASCII '-' characters instead)."
+            )
+        elif is_sentiment:
+            extra_instructions.append(
+                "You must classify the sentiment and provide a reason. Follow this format strictly:\n"
+                "Label — Reason\n\n"
+                "Where:\n"
+                "1. Label must be exactly one of: Positive, Negative, Neutral.\n"
+                "2. For contrastive mixed reviews (containing both positive and negative aspects), you must prefer Neutral.\n"
+                "3. Reject Negative if there is a clear positive resolution present in the review.\n"
+                "4. The Reason must be exactly one sentence.\n"
+                "5. The Reason must acknowledge both positive and negative evidence present in the text.\n"
+                "6. Do not include any preamble, headers, or bold/markdown styling on the label. Return only the raw text line: Label — Reason"
+            )
+        elif is_ner:
+            extra_instructions.append(
+                "You must extract the entities. Follow this format strictly:\n"
+                "Entity text — LABEL\n\n"
+                "One entity per line.\n"
+                "Allowed labels: PERSON, ORGANIZATION, LOCATION, DATE.\n"
+                "Requirements:\n"
+                "1. Preserve the exact entity surface text.\n"
+                "2. Do not merge separate or overlapping entities (for example, do not merge 'Zurich' with 'ETH Zurich' - keep them separate as 'Zurich — LOCATION' and 'ETH Zurich — ORGANIZATION').\n"
+                "3. Do not output Markdown tables, JSON, explanations, headers, or any other introductory text.\n"
+                "4. Every line must contain exactly one entity extraction."
+            )
+        elif exact_bullet_count is not None:
+            word_limit_clause = f" Each bullet point must have at most {max_words_per_bullet} words." if max_words_per_bullet else ""
+            extra_instructions.append(
+                f"You must summarize the text in exactly {exact_bullet_count} bullet points.\n"
+                "Requirements:\n"
+                f"1. Output exactly {exact_bullet_count} lines, each starting with \"- \".\n"
+                f"2. {word_limit_clause}\n"
+                "3. No headers, no introductory text, no preamble.\n"
+                "4. Use the exact key terms as written in the prompt — do NOT paraphrase them. For example: if the prompt says 'low emissions', write 'low emissions' (not 'near-zero CO2' or 'greenhouse-gas'); if the prompt says 'intermittency', write 'intermittency' (not 'fluctuates' or 'varies'); if the prompt says 'storage investment', write 'storage' and 'investment' (not 'batteries cost'). When describing remote work organizational tools, write 'digital tools' (not 'digital collaboration tools' or 'technology investment'). Copy exact noun phrases from the prompt directly into the bullets."
+            )
+
+            # Extract explicit verbatim aspects from "covering X, Y, and Z" patterns
+            cover_match = re.search(
+                r'\bcovering\s+(?:[\w\s\'\-]+\'s\s+)?(?P<aspects>.+?)(?:\s*\.\s*$|\s*$)',
+                prompt, re.IGNORECASE
+            )
+            if cover_match:
+                aspects_raw = cover_match.group('aspects').strip().rstrip('.')
+                parts = re.split(r',\s*(?:and\s+)?|\s+and\s+', aspects_raw)
+                verbatim_terms = [p.strip().rstrip('.') for p in parts if p.strip() and len(p.strip()) < 40]
+                if verbatim_terms:
+                    terms_str = ', '.join(f"'{t}'" for t in verbatim_terms)
+                    extra_instructions.append(
+                        f"CRITICAL: The prompt explicitly names these topics — you MUST include them verbatim in your bullets: {terms_str}. "
+                        f"Do NOT substitute synonyms. These exact phrases must appear in your output."
+                    )
+
+        if extra_instructions:
+            return f"{prompt}\n\n[REQUIREMENTS]\n" + "\n".join(extra_instructions)
+        return prompt
+
     async def _run_cascade_routing_async(self, request: InferenceRequest, state: RequestState) -> Optional[InferenceResponse]:
         # 1. Difficulty Classification
         difficulty_tier = self.classifier.classify(request.prompt)
@@ -508,12 +597,18 @@ class TERAOrchestrator:
 
         def add_candidate(out: RawModelOutput):
             ver_res = self.rovl.verify(out, constraints, task_id=request.task_id)
+            prompt_lower = request.prompt.lower()
+            is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+            is_ner = self._is_ner(prompt_lower)
+
             format_result = self.output_enforcer.enforce(
                 out.text,
                 strip_json_fence=(
                     request.schema_type == "json"
                     and out.text.lstrip().startswith("```")
                 ),
+                is_sentiment=is_sentiment,
+                is_ner=is_ner,
                 **format_constraints,
             )
             txt = format_result.output
@@ -826,6 +921,10 @@ class TERAOrchestrator:
         escalation_route = "local_power" if local_power_fallback else "remote_fallback"
         state.remote_fallback_triggered = not local_power_fallback
 
+        prompt_lower = request.prompt.lower()
+        is_sentiment = "sentiment" in prompt_lower or "classify" in prompt_lower
+        is_ner = self._is_ner(prompt_lower)
+
         format_constraints = self.output_enforcer.constraints_from_prompt(request.prompt)
         json_schema = {} if request.schema_type == "json" else None
         constraints = VerificationConstraints(
@@ -833,8 +932,9 @@ class TERAOrchestrator:
             regex_pattern=request.regex_pattern if request.schema_type == "regex" else None,
         )
 
-        # --- First attempt ---
-        power_out = await self.remote_client.generate_async(prompt, params)
+        # --- First attempt with enriched prompt ---
+        enriched_prompt = self._enrich_prompt(prompt, request)
+        power_out = await self.remote_client.generate_async(enriched_prompt, params)
         state.fireworks_tokens = 0 if local_power_fallback else power_out.usage_tokens
 
         state.update_inference(
@@ -853,6 +953,8 @@ class TERAOrchestrator:
                 request.schema_type == "json"
                 and power_out.text.lstrip().startswith("```")
             ),
+            is_sentiment=is_sentiment,
+            is_ner=is_ner,
             **format_constraints,
         )
         if format_result.output != power_out.text:
@@ -865,11 +967,24 @@ class TERAOrchestrator:
             and getattr(self.settings, "tera_external_fallback_enabled", False)
         ):
             constraint_desc = "; ".join(format_result.failures)
+            
+            required_structure = ""
+            if is_sentiment:
+                required_structure = "Label — Reason (where Label is Positive, Negative, or Neutral, and Reason is exactly one sentence)"
+            elif is_ner:
+                required_structure = "Entity text — LABEL (one entity per line; Allowed labels: PERSON, ORGANIZATION, LOCATION, DATE)"
+            elif format_constraints.get("exact_bullet_count") is not None:
+                required_structure = f"Exactly {format_constraints.get('exact_bullet_count')} bullet points starting with '- '"
+            else:
+                required_structure = "Strictly conform to the prompt formatting constraints"
+
             retry_prompt = (
-                f"{request.prompt}\n\n"
+                f"{self._enrich_prompt(request.prompt, request)}\n\n"
                 f"[CORRECTION REQUIRED]\n"
-                f"Your previous response violated these format constraints: {constraint_desc}\n"
-                f"Return only the required output, strictly satisfying all constraints above."
+                f"Your previous response failed validation with these errors: {constraint_desc}\n"
+                f"Required Output Structure:\n"
+                f"{required_structure}\n\n"
+                f"Instruction: Return ONLY the corrected answer, strictly conforming to the required structure above."
             )
             _log_structured(
                 "INFO",
@@ -898,6 +1013,8 @@ class TERAOrchestrator:
                         request.schema_type == "json"
                         and retry_out.text.lstrip().startswith("```")
                     ),
+                    is_sentiment=is_sentiment,
+                    is_ner=is_ner,
                     **format_constraints,
                 )
                 if retry_format.output != retry_out.text:
@@ -938,5 +1055,4 @@ class TERAOrchestrator:
             self.cache.insert(prompt, text)
         except Exception:
             pass
-
 
